@@ -4,32 +4,14 @@ import com.espertech.esper.client.*;
 import java.util.Random;
 import java.util.Date;
  
-public class voterMain {
+public class VoterMain {
  
-    public static class Tick {
-        String symbol;
-        Double price;
-        Date timeStamp;
+    private static PhoneCallGenerator generator = new PhoneCallGenerator();
  
-        public Tick(String s, double p, long t) {
-            symbol = s;
-            price = p;
-            timeStamp = new Date(t);
-        }
-        public double getPrice() {return price;}
-        public String getSymbol() {return symbol;}
-        public Date getTimeStamp() {return timeStamp;}
+    public static void GenerateVote(EPRuntime cepRT) {
  
-        @Override
-        public String toString() {
-            return "Price: " + price.toString() + " time: " + timeStamp.toString();
-        }
-    }
- 
-    private static Random generator = new Random();
- 
-    public static void GenerateRandomTick(EPRuntime cepRT) {
- 
+    	
+    	
         double price = (double) generator.nextInt(10);
         long timeStamp = System.currentTimeMillis();
         String symbol = "AAPL";
