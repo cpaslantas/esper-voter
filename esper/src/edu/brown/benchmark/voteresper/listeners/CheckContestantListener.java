@@ -16,8 +16,8 @@ public class CheckContestantListener implements UpdateListener {
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
     	System.out.println("CheckContestantListener");
-        PhoneCall tick = (PhoneCall) newData[0].get("VoteTick");
-
+        PhoneCall tick = (PhoneCall) newData[0].get("tick");
+        System.out.println("1");
         boolean exists = dc.realContestant(tick.contestantNumber);
 
         if(exists)
