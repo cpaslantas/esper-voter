@@ -1,14 +1,17 @@
 package edu.brown.benchmark.voteresper;
 
 import com.espertech.esper.client.*;
+
+import edu.brown.benchmark.voteresper.dataconnectors.*;
+import edu.brown.benchmark.voteresper.listeners.*;
+
 import java.util.Random;
 import java.util.Date;
  
 public class VoterMain {
  
     private static PhoneCallGenerator generator = new PhoneCallGenerator();
-    
-    
+    private static EsperDataConnector dc;
  
     public static void GenerateVote(EPRuntime cepRT) {
  
@@ -17,17 +20,11 @@ public class VoterMain {
         cepRT.sendEvent(pc);
  
     }
- 
-    public static class CEPListener implements UpdateListener {
- 
-        public void update(EventBean[] newData, EventBean[] oldData) {
-            System.out.println("Event received: " + newData[0].getUnderlying());
-        }
-    }
     
     
  
     public static void main(String[] args) {
+    	dc = new DummyDataConnector(VoterConstants.NUM_CONTESTANTS);
  
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
@@ -37,9 +34,9 @@ public class VoterMain {
  
         EPAdministrator cepAdm = cep.getEPAdministrator();
         EPStatement cepStatement = cepAdm.createEPL("select * from " +
-                "VoteTick(contestantNumber=1).win:length(30)");
+                "VoteTick(contestantNumber>0)");
  
-        cepStatement.addListener(new CEPListener());
+        cepStatement.addListener(new CheckContestantListener(dc));
         System.out.println("VOTER MAIN");
  
        // We generate a few ticks...
