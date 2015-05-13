@@ -40,10 +40,7 @@ public abstract class VoterConstants {
 	public static final int MAX_VOTES = 1; 
 	public static final int NUM_CONTESTANTS = 12; 
 	
-	public static final String OUTPUT_FILE = "logs/demosstoreout.txt";
-	public static final String OVERWRITE_FILE = "logs/demosstorecurrent.txt";
-	public static final String CONTESTANTS_FILE = "logs/sstorecontestants.txt";
-	public static final String VOTE_FILE = "demo/demo-votes.txt";
+	public static final String VOTE_FILE = "/home/john/git/s-store/logs/votes-XXX.txt";
 	public static final int DELETE_CODE = -1;
 	public static final boolean SOCKET_CONTROL = false;
 	
