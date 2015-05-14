@@ -45,9 +45,8 @@ public class VoterMain {
         System.out.println("VOTER MAIN");
  
        // We generate a few ticks...
-        for (int i = 0; i < 10000; i++) {
-            GenerateVote(cepRT);
-        }
-        System.out.println(dc.printStats());
-    }
+        VoteSender vs = new VoteSender(cep,generator, dc);
+        vs.start();
+        
+    } 
 }
