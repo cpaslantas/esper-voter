@@ -16,7 +16,6 @@ public class VoterMain {
     public static void GenerateVote(EPRuntime cepRT) {
  
         PhoneCall pc = generator.receive();
-        System.out.println("Sending call:" + pc);
         cepRT.sendEvent(pc);
  
     }
@@ -28,20 +27,27 @@ public class VoterMain {
  
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
-        cepConfig.addEventType("VoteTick", PhoneCall.class.getName());
+        cepConfig.addEventType("PhoneCall", PhoneCall.class.getName());
+        cepConfig.addEventType("Vote", Vote.class.getName());
         EPServiceProvider cep = EPServiceProviderManager.getProvider("myCEPEngine", cepConfig);
         EPRuntime cepRT = cep.getEPRuntime();
  
         EPAdministrator cepAdm = cep.getEPAdministrator();
-        EPStatement cepStatement = cepAdm.createEPL("select * from " +
-                "VoteTick(contestantNumber>0)");
+        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+                "PhoneCall(contestantNumber>0)");
+        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+                "Vote.win:length_batch(100)");
+        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+                "Vote.win:length_batch(1000)");
  
-        cepStatement.addListener(new CheckContestantListener(dc));
+        phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
+        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
         System.out.println("VOTER MAIN");
  
        // We generate a few ticks...
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10000; i++) {
             GenerateVote(cepRT);
         }
+        System.out.println(dc.printStats());
     }
 }
