@@ -1,12 +1,16 @@
 package edu.brown.benchmark.voteresper;
 
+import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import com.espertech.esper.client.EPServiceProvider;
 
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 
 public class VoteSender implements Runnable{
 	
-	   private Thread t;
 	   private PhoneCallGenerator generator;
 	   private EPServiceProvider cep;
 	   private EsperDataConnector dc;
@@ -17,25 +21,9 @@ public class VoteSender implements Runnable{
 	       this.dc = dc;
 	   }
 	   public void run() {
-//	      try {
-	         for(int i = 0; i < 10000; i++) {
-	        	PhoneCall pc = generator.receive();
-	        	cep.getEPRuntime().sendEvent(pc);
-	            //Thread.sleep(10);
-	         }
-	         System.out.println(dc.printStats());
-//	     } catch (InterruptedException e) {
-//	         System.out.println("VoteSender thread interrupted.");
-//	     }
+		   
+		  PhoneCall pc = generator.receive();
+       	  cep.getEPRuntime().sendEvent(pc);
 	   }
-	   
-	   public void start ()
-	   {
-	      if (t == null)
-	      {
-	         t = new Thread (this, "VoteSender");
-	         t.start ();
-	      }
-	   }
-	
+
 }
