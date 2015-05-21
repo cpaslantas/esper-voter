@@ -51,30 +51,32 @@ public class VoterMain {
     
  
     public static void main(String[] args) {
-    	dc = new DummyDataConnector(VoterConstants.NUM_CONTESTANTS);
- 
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
         //configuration changes
         cepConfig.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false); //removes order-preserving
-        cepConfig.getEngineDefaults().getThreading()
+        cepConfig.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
         //end configuration changes
         
         cepConfig.addEventType("PhoneCall", PhoneCall.class.getName());
         cepConfig.addEventType("Vote", Vote.class.getName());
         EPServiceProvider cep = EPServiceProviderManager.getProvider("VoterDemo", cepConfig);
         EPRuntime cepRT = cep.getEPRuntime();
+        
+        dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, cep);
  
         EPAdministrator cepAdm = cep.getEPAdministrator();
+        
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
         EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
                 "Vote.win:length_batch(100)");
         EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
                 "Vote.win:length_batch(1000)");
- 
+        
         phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
         voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
+        
         System.out.println("VOTER MAIN");
  
        startThreads(2, 10000, 100, cep);
