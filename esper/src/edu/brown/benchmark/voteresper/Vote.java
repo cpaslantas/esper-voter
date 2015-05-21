@@ -32,4 +32,8 @@ public class Vote {
     public String toString() {
     	return "VoteID: " + voteId + " ContestantNumber: " + contestantNumber + " PhoneNumber: " + phoneNumber;
     }
+    
+    public String outputValues() {
+    	return new String(voteId + "," + contestantNumber + "," + phoneNumber + ",'" + state + "'," + timestamp);
+    }
 }

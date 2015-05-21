@@ -90,7 +90,7 @@ public class DummyDataConnector extends EsperDataConnector {
 	}
 
 	@Override
-	public int numTimesVoted(long phoneNumber) {
+	public long numTimesVoted(long phoneNumber) {
 		if(votes.containsKey(phoneNumber))
 			return 1;
 		else
@@ -106,13 +106,13 @@ public class DummyDataConnector extends EsperDataConnector {
 			return stateAreaCode.get(areaCode);
 	}
 	
-	public int getNumRemainingContestants() {
-		return votesByContestant.keySet().size();
+	public long getNumRemainingContestants() {
+		return (long)votesByContestant.keySet().size();
 	}
 
 	@Override
-	public int getNumVotes() {
-		return totalNumVotes;
+	public long getNumVotes() {
+		return (long)totalNumVotes;
 	}
 	
 	@Override

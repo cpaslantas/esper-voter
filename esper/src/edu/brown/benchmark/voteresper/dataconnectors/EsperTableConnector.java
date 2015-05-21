@@ -2,11 +2,14 @@ package edu.brown.benchmark.voteresper.dataconnectors;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.espertech.esper.client.EPAdministrator;
+import com.espertech.esper.client.EPOnDemandQueryResult;
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EventBean;
 
 import edu.brown.benchmark.voteresper.Vote;
 
@@ -65,33 +68,29 @@ public class EsperTableConnector extends EsperDataConnector {
 	private EPServiceProvider cep;
 	private EPRuntime cepRT;
 	private int numContestants;
-	
-	private HashMap<Long, Vote> votes;
-	private HashMap<Integer, Set<Vote>> votesByContestant;
-	private HashMap<Short, String> stateAreaCode;
-	private int totalNumVotes;
 	private int allVotesEver;
 	
 	public EsperTableConnector(int numContestants, EPServiceProvider cep){
 		this.numContestants = numContestants;
 		this.cep = cep;
 		this.cepRT = cep.getEPRuntime();
+		this.allVotesEver = 0;
 		initializeDatabase();
 		populateDatabase(numContestants);
 	}
 	
 	private void initializeDatabase() {
 		EPAdministrator cepAdm = cep.getEPAdministrator();
-		cepAdm.createEPL("create table Votes (vote_id long primary key, " +
+		cepAdm.createEPL("create table votes_tbl (vote_id long primary key, " +
+				 " contestant_number  int, " +
 				 "phone_number long, " + 
 				 " state string, " +
-				 " contestant_number  int, " +
-				 "created	     int )");
+				 "created	     long )");
 		cepAdm.createEPL("create table contestants (" +
 				 " contestant_number int primary key," +
 				 " contestant_name string)");
 		cepAdm.createEPL("create table area_code_state (" +
-				 "area_code short primary key, " +
+				 "area_code int primary key, " +
 				 "state string)");
 	}
 	
@@ -107,43 +106,57 @@ public class EsperTableConnector extends EsperDataConnector {
 
 	@Override
 	public boolean hasVoted(long phoneNumber) {
-		//EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) from votes where 
-		
-		
-		return votes.containsKey(phoneNumber);
+		return numTimesVoted(phoneNumber) > 0;
 	}
 
 	@Override
 	public boolean realContestant(int contestant) {
-		if(contestant < 1)
+		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number from contestants where contestant_number = " + contestant); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
 			return false;
-		return contestant <= numContestants;
+		else
+			return true;
 	}
 
 	@Override
-	public int numTimesVoted(long phoneNumber) {
-		if(votes.containsKey(phoneNumber))
-			return 1;
-		else
-			return 0;
+	public long numTimesVoted(long phoneNumber) {
+		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from votes_tbl where phone_number = " + phoneNumber); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return -1;
+		
+		return (Long)e[0].get("num_votes");
 	}
 
 	@Override
 	public String getState(long phoneNumber) {
 		short areaCode = (short)(phoneNumber/10000000l);
-		if(!stateAreaCode.containsKey(areaCode))
+		EPOnDemandQueryResult result = cepRT.executeQuery("select state from area_code_state where area_code = " + areaCode); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
 			return "XX";
-		else
-			return stateAreaCode.get(areaCode);
+		
+		return (String)e[0].get("state");
 	}
 	
-	public int getNumRemainingContestants() {
-		return votesByContestant.keySet().size();
+	public long getNumRemainingContestants() {
+		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_contestants from contestants"); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return -1;
+		
+		return (Long)e[0].get("num_contestants");
 	}
 
 	@Override
-	public int getNumVotes() {
-		return totalNumVotes;
+	public long getNumVotes() {
+		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from votes_tbl"); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return -1;
+		
+		return (Long)e[0].get("num_votes");
 	}
 	
 	@Override
@@ -153,13 +166,7 @@ public class EsperTableConnector extends EsperDataConnector {
 
 	@Override
 	public boolean insertVote(Vote v) {
-		if(votes.containsKey(v.phoneNumber))
-			return false;
-		
-		int contestantId = v.contestantNumber;
-		votes.put(v.phoneNumber, v);
-		votesByContestant.get(contestantId).add(v);
-		totalNumVotes++;
+		cepRT.executeQuery("insert into votes_tbl values (" + v.outputValues() + ")"); 
 		allVotesEver++;
 		return true;
 	}
@@ -172,48 +179,35 @@ public class EsperTableConnector extends EsperDataConnector {
 
 	@Override
 	public int findLowestContestant() {
-		int lowest = -1;
-		int numVotes = Integer.MAX_VALUE;
-		for(int conNum : votesByContestant.keySet()){
-			int curVotes = votesByContestant.get(conNum).size();
-			if(curVotes < numVotes) {
-				numVotes = curVotes;
-				lowest = conNum;
-			}
-		}
-		return lowest;
+		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes, contestant_number desc"); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return -1;
+		
+		return (Integer)e[0].get("contestant_number");
 	}
 	
 	@Override
 	public int findTopContestant() {
-		int top = -1;
-		int numVotes = -1;
-		for(int conNum : votesByContestant.keySet()){
-			int curVotes = votesByContestant.get(conNum).size();
-			if(curVotes > numVotes) {
-				numVotes = curVotes;
-				top = conNum;
-			}
-		}
-		return top;
+		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes desc, contestant_number asc"); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return -1;
+		
+		return (Integer)e[0].get("contestant_number");
 	}
 
 	@Override
 	public boolean removeContestant(int contestant) {
-		if(!votesByContestant.containsKey(contestant))
-			return false;
+		cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
+		cepRT.executeQuery("delete from contestants where contestant_number = " + contestant);
+		numContestants--;
 		
-		Set<Vote> callsForContestant = votesByContestant.get(contestant);
-		for(Vote pc : callsForContestant) {
-			votes.remove(pc.phoneNumber);
-			totalNumVotes--;
-		}
-		votesByContestant.remove(contestant);
 		return true;
 	}
 	
 	public String printStats(){
-		String out = "Num Votes: " + totalNumVotes + "\n";
+		String out = "Total Num Votes: " + allVotesEver + "\n";
 		out += "Current Leader: " + findTopContestant() + "\n";
 		out += "Current Loser: " + findLowestContestant() + "\n";
 		out += "Remaining Contestants: " + getNumRemainingContestants();

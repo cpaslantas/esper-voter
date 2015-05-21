@@ -18,15 +18,16 @@ public class PhoneCallListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
-        PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
+    	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
         boolean exists = dc.realContestant(pc.contestantNumber);
-        int numVotes = dc.numTimesVoted(pc.phoneNumber);
+        long numVotes = dc.numTimesVoted(pc.phoneNumber);
         String state = dc.getState(pc.phoneNumber);
-
+        
         if(!exists){
         	System.out.println(pc.contestantNumber + " not valid!");
         	return;
         }
+
         if(numVotes >= VoterConstants.MAX_VOTES){
         	System.out.println(pc.phoneNumber + " over the max vote limit!");
         	return;

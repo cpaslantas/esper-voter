@@ -54,8 +54,8 @@ public class VoterMain {
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
         //configuration changes
-        cepConfig.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false); //removes order-preserving
-        cepConfig.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+        cepConfig.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(true); //removes order-preserving
+        cepConfig.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(true);
         //end configuration changes
         
         cepConfig.addEventType("PhoneCall", PhoneCall.class.getName());
@@ -79,7 +79,7 @@ public class VoterMain {
         
         System.out.println("VOTER MAIN");
  
-       startThreads(2, 10000, 100, cep);
+       startThreads(2, 10000, 30, cep);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
         

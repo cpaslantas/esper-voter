@@ -21,7 +21,7 @@ public class VoteDeleteListener implements UpdateListener {
     	System.out.println("VoteDeleteListener - " + dc.getAllVotesEver());
     	
     	int lowest = dc.findLowestContestant();
-    	int numContestants = dc.getNumRemainingContestants();
+    	long numContestants = dc.getNumRemainingContestants();
     	
     	if(numContestants <= 1) {
     		System.out.println("Not enough contestants to remove");
