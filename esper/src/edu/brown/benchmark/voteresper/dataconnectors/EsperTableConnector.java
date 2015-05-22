@@ -166,7 +166,7 @@ public class EsperTableConnector extends EsperDataConnector {
 
 	@Override
 	public boolean insertVote(Vote v) {
-		cepRT.executeQuery("insert into votes_tbl values (" + v.outputValues() + ")"); 
+		cepRT.executeQuery("insert into votes_tbl values (" + v.outputValues() + ")"); 					
 		allVotesEver++;
 		return true;
 	}
@@ -214,8 +214,8 @@ public class EsperTableConnector extends EsperDataConnector {
 		if(e.length == 0)
 			return "";
 		
-		String o = "VOTES: " + allVotesEver + "\n";
-		o += "VOTES2: " + getNumVotes() + "\n";
+		String o = "ALL VOTES: " + allVotesEver + "\n";
+		o += "CUR VOTES: " + getNumVotes() + "\n";
 		for(int i = 0; i < e.length; i++) {
 			o += e[i].get("contestant_number") + "," + e[i].get("num_votes") + "\n";
 		}

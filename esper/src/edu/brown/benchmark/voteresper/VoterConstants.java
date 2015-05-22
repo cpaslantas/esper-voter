@@ -12,7 +12,7 @@ public abstract class VoterConstants {
 	public static final int MAX_VOTES = 1; 
 	public static final int NUM_CONTESTANTS = 12; 
 	
-	public static final String VOTE_FILE = "/Users/john/git/esper-voter/data/votes-XXX.txt";
+	public static final String VOTE_FILE = "/home/john/git/esper-voter/data/votes-XXX.txt";
 	public static final int DELETE_CODE = -1;
 	public static final boolean SOCKET_CONTROL = false;
 	

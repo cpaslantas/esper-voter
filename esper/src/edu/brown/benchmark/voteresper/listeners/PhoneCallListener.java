@@ -24,12 +24,12 @@ public class PhoneCallListener implements UpdateListener {
         String state = dc.getState(pc.phoneNumber);
         
         if(!exists){
-        	System.out.println(pc.contestantNumber + " not valid!");
+        	//System.out.println(pc.contestantNumber + " not valid!");
         	return;
         }
 
         if(numVotes >= VoterConstants.MAX_VOTES){
-        	System.out.println(pc.phoneNumber + " over the max vote limit!");
+        	//System.out.println(pc.phoneNumber + " over the max vote limit!");
         	return;
         }
         
