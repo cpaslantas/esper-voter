@@ -199,11 +199,28 @@ public class EsperTableConnector extends EsperDataConnector {
 
 	@Override
 	public boolean removeContestant(int contestant) {
+		System.out.println(printAllVotes());
+		System.out.println("REMOVING CONTESTANT " + contestant);
 		cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
 		cepRT.executeQuery("delete from contestants where contestant_number = " + contestant);
 		numContestants--;
-		
 		return true;
+	}
+	
+	public String printAllVotes() {
+		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes, contestant_number desc"); 
+		EventBean[] e = result.getArray();
+		
+		if(e.length == 0)
+			return "";
+		
+		String o = "VOTES: " + allVotesEver + "\n";
+		o += "VOTES2: " + getNumVotes() + "\n";
+		for(int i = 0; i < e.length; i++) {
+			o += e[i].get("contestant_number") + "," + e[i].get("num_votes") + "\n";
+		}
+		o += "-----------\n";
+		return o;		
 	}
 	
 	public String printStats(){

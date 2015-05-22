@@ -79,7 +79,7 @@ public class VoterMain {
         
         System.out.println("VOTER MAIN");
  
-       startThreads(2, 10000, 30, cep);
+       startThreads(1, 10000, 30, cep);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
         
