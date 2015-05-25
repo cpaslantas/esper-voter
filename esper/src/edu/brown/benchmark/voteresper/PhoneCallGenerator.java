@@ -39,12 +39,13 @@ import java.util.Queue;
 
 public class PhoneCallGenerator {
 	
+	private String voteFile;
 	private Queue<PhoneCall> callQueue;
     private BufferedReader in;
 	
 	public void loadAllCalls() {
 		try {
-			in = new BufferedReader(new FileReader(VoterConstants.VOTE_FILE));
+			in = new BufferedReader(new FileReader(voteFile));
 			String s = in.readLine();
 			while(s != null) {
 				callQueue.add(new PhoneCall(s));
@@ -62,8 +63,9 @@ public class PhoneCallGenerator {
 		}
 	}
 	
-	public PhoneCallGenerator() {
+	public PhoneCallGenerator(String vf) {
 		callQueue = new LinkedList<PhoneCall>();
+		voteFile = vf;
 		loadAllCalls();
     }
 	

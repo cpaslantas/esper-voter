@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  
 public class VoterMain {
  
-    private static PhoneCallGenerator generator = new PhoneCallGenerator();
+    private static PhoneCallGenerator generator;
     private static EsperDataConnector dc;
     private static long startTime = 0;
  
@@ -51,6 +51,33 @@ public class VoterMain {
     
  
     public static void main(String[] args) {
+    	int numThreads = 1;
+    	
+    	//process the arguments
+    	for(int i = 0; i < args.length; i++){
+    		String arg[] = args[i].split("=");
+    		if(arg.length <= 1) {
+    			System.out.println("WARNING: arg " + args[i] + " is not valid");
+    			continue;
+    		}
+    		String param = arg[0];
+    		String value = arg[1];
+    		if(param.equals("-threads") || param.equals("-t")) {
+    			numThreads = new Integer(value);
+    		}
+    		else if(param.equals("-votefile") || param.equals("-vf")) {
+    			VoterConstants.VOTE_FILE = value;
+    		}
+    		else if(param.equals("-votedir") || param.equals("-dir")) {
+    			VoterConstants.VOTE_DIR = value;
+    		}
+    	}
+
+    	String vf = VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE;
+    	System.out.println(vf);
+    	System.out.println("Num Threads: " + numThreads);
+    	generator = new PhoneCallGenerator(vf);
+    	
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
         //configuration changes
@@ -79,7 +106,7 @@ public class VoterMain {
         
         System.out.println("VOTER MAIN");
  
-       startThreads(1, 10000, 30, cep);
+       startThreads(numThreads, 10000, 30, cep);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
         

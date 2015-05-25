@@ -4,16 +4,17 @@
     </description>
   <!-- set global properties for this build -->
   <property name="lib" value="lib"/>
-  <property name="src" location="src"/>
+  <property name="src" location="src/edu/brown/benchmark/voteresper"/>
   <property name="build" location="build"/>
   <property name="dist"  location="dist"/>
+
 
   <path id="lib.classpath">
         <fileset dir="${lib}">
             <include name="*.jar"/>
         </fileset>
         <pathelement location="${build}"/>
-        <fileset dir="lib"><!-- local dependencies -->
+        <fileset dir="lib"> 
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -36,10 +37,8 @@
   <target name="compile" depends="init"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
-       <classpath>
-          <pathelement path="lib/*.jar" />
-        </classpath>
+     <javac classpathref="lib.classpath" srcdir="${src}" destdir="${build}">
+          <src path="${src}"/>
       </javac>
   </target>
 
@@ -51,6 +50,18 @@
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="esper-voter.jar" basedir="${build}"/>
   </target>
+
+  <target name="run" depends="build">
+        <echo message="***"/>
+        <echo message="* Warning: running in simulation mode with no remote process to send messages"/>
+        <echo message="* This is not the recommanded mode to perform real benchmarks"/>
+        <echo message="***"/>
+        <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.VoterMain" fork="true">
+            <!--<arg line="-rate 4x10000 -mode STP"/>-->
+            <arg value="10"/>
+            <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
+        </java>
+    </target>
 
   <target name="clean"
         description="clean up" >
