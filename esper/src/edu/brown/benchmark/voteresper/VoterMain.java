@@ -28,20 +28,32 @@ public class VoterMain {
     public static void startThreads(int numberOfThreads,
             int numberOfTicksToSend,
             int numberOfSecondsWaitForCompletion,
-            EPServiceProvider epService)
+            EPServiceProvider epService,
+            int inputRate)
 	{
 		final int totalNumTicks = numberOfTicksToSend;
 		
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, numberOfThreads, 99999, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-		startTime = System.nanoTime();
-		for (int i = 0; i < totalNumTicks; i++)
-		{
-			VoteSender runnable = new VoteSender(epService, generator, dc);
-			pool.execute(runnable);
-		}
 		
 		System.out.println(".performTest Starting thread pool, threads=" + numberOfThreads);
 		pool.setCorePoolSize(numberOfThreads);
+		
+		startTime = System.nanoTime();
+		VoteSender runnable = new VoteSender(epService, generator, dc);
+		long sleepTime = 0l;
+		if(inputRate > 0)
+			sleepTime = 1000l/((long)inputRate);
+		
+		for (int i = 0; i < totalNumTicks; i++)
+		{
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			pool.execute(runnable);
+		}
 		
 		System.out.println(".performTest Listening for completion");
 		EPRuntimeUtil.awaitCompletion(epService.getEPRuntime(), totalNumTicks, numberOfSecondsWaitForCompletion, 1, 10);
@@ -70,6 +82,9 @@ public class VoterMain {
     		}
     		else if(param.equals("-votedir") || param.equals("-dir")) {
     			VoterConstants.VOTE_DIR = value;
+    		}
+    		else if(param.equals("-inputrate") || param.equals("-ir")) {
+    			VoterConstants.INPUT_RATE = new Integer(value);
     		}
     	}
 
@@ -106,7 +121,7 @@ public class VoterMain {
         
         System.out.println("VOTER MAIN");
  
-       startThreads(numThreads, 10000, 30, cep);
+       startThreads(numThreads, 10000, 30, cep, VoterConstants.INPUT_RATE);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
         

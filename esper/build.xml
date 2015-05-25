@@ -52,13 +52,19 @@
   </target>
 
   <target name="run" depends="build">
+        <property name="threads" value="1"/>
+        <property name="votedir" value="/home/john/git/esper-voter/data/"/>
+        <property name="votefile" value="votes-XXX.txt"/>
+
         <echo message="***"/>
         <echo message="* Warning: running in simulation mode with no remote process to send messages"/>
         <echo message="* This is not the recommanded mode to perform real benchmarks"/>
         <echo message="***"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.VoterMain" fork="true">
             <!--<arg line="-rate 4x10000 -mode STP"/>-->
-            <arg value="10"/>
+            <arg value="-threads=${threads}"/>
+            <arg value="-votedir=${votedir}"/>
+            <arg value="-votefile=${votefile}"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>
