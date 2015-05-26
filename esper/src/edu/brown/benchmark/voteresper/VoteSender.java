@@ -20,6 +20,11 @@ public class VoteSender implements Runnable{
 	       this.generator = pcg;
 	       this.dc = dc;
 	   }
+	   
+	   public boolean hasVotes() {
+		   return generator.hasVotes();
+	   }
+	   
 	   public void run() {
 		   
 		  PhoneCall pc = generator.receive();

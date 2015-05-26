@@ -5,6 +5,7 @@ import com.espertech.esper.client.*;
 import edu.brown.benchmark.voteresper.dataconnectors.*;
 import edu.brown.benchmark.voteresper.listeners.*;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Date;
@@ -32,6 +33,8 @@ public class VoterMain {
             int inputRate)
 	{
 		final int totalNumTicks = numberOfTicksToSend;
+		double ticksPerMS = -1.0;
+		long numberOfNanoSeconds = (long)numberOfSecondsWaitForCompletion * 1000000000;
 		
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, numberOfThreads, 99999, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		
@@ -39,20 +42,31 @@ public class VoterMain {
 		pool.setCorePoolSize(numberOfThreads);
 		
 		startTime = System.nanoTime();
-		VoteSender runnable = new VoteSender(epService, generator, dc);
-		long sleepTime = 0l;
+		VoteSender vs = new VoteSender(epService, generator, dc);
 		if(inputRate > 0)
-			sleepTime = 1000l/((long)inputRate);
+			ticksPerMS = (double)inputRate/1000.0;
 		
-		for (int i = 0; i < totalNumTicks; i++)
+		
+		int ticksSent = 0;
+		long startTime = System.nanoTime();
+		long curTime = startTime;
+		long curDuration = 0l;
+		while(vs.hasVotes() && ticksSent < totalNumTicks)
 		{
-			try {
-				Thread.sleep(sleepTime);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(System.nanoTime() - startTime > numberOfNanoSeconds)
+				break;
+			curDuration = System.nanoTime() - curTime;
+			curTime = System.nanoTime();
+			int timesToExecute = (int)((ticksPerMS * curDuration)/1000000.0);
+			for(int i = 0; i < timesToExecute; i++) {
+				if(!vs.hasVotes() || ticksSent >= totalNumTicks)
+					break;
+				pool.execute(vs);
+				ticksSent++;
+				
+				try {Thread.sleep(VoterConstants.SLEEP_TIME);} 
+				catch (InterruptedException e) {	e.printStackTrace();}
 			}
-			pool.execute(runnable);
 		}
 		
 		System.out.println(".performTest Listening for completion");
@@ -64,6 +78,8 @@ public class VoterMain {
  
     public static void main(String[] args) {
     	int numThreads = 1;
+    	int numLines = -1;
+    	int duration = 30;
     	
     	//process the arguments
     	for(int i = 0; i < args.length; i++){
@@ -74,7 +90,7 @@ public class VoterMain {
     		}
     		String param = arg[0];
     		String value = arg[1];
-    		if(param.equals("-threads") || param.equals("-t")) {
+    		if(param.equals("-clientthreads") || param.equals("-ct")) {
     			numThreads = new Integer(value);
     		}
     		else if(param.equals("-votefile") || param.equals("-vf")) {
@@ -86,12 +102,28 @@ public class VoterMain {
     		else if(param.equals("-inputrate") || param.equals("-ir")) {
     			VoterConstants.INPUT_RATE = new Integer(value);
     		}
+    		else if(param.equals("-votestosend") || param.equals("-vts")) {
+    			numLines = new Integer(value);
+    		}
+    		else if(param.equals("-duration") || param.equals("-d")) {
+    			duration = new Integer(value);
+    		}
     	}
 
     	String vf = VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE;
     	System.out.println(vf);
     	System.out.println("Num Threads: " + numThreads);
-    	generator = new PhoneCallGenerator(vf);
+    	
+    	if(numLines == -1) {
+			try {
+				numLines = EPRuntimeUtil.countLines(vf);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	    	
+    	generator = new PhoneCallGenerator(vf, numLines);
     	
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
@@ -121,7 +153,7 @@ public class VoterMain {
         
         System.out.println("VOTER MAIN");
  
-       startThreads(numThreads, 10000, 30, cep, VoterConstants.INPUT_RATE);
+       startThreads(numThreads, numLines, duration, cep, VoterConstants.INPUT_RATE);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
         

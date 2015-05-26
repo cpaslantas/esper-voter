@@ -16,6 +16,8 @@ public abstract class VoterConstants {
 	//public static String VOTE_DIR = "../data/";
 	public static String VOTE_DIR = "/home/john/git/esper-voter/data/";
 	public static String VOTE_FILE = "votes-XXX.txt";
+	public static int QUEUE_SIZE = 10000;
+	public static long SLEEP_TIME = 2;
 
 	public static final String LOCAL_HOST = "localhost";
 

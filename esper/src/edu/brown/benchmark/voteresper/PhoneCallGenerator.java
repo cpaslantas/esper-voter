@@ -30,18 +30,69 @@
 
 package edu.brown.benchmark.voteresper;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class PhoneCallGenerator {
 	
+	private class QueueLoader implements Runnable {
+		
+		private Queue<PhoneCall> callQueue;
+		private String voteFile;
+		private boolean stop = false;
+		private int queueSize;
+		
+		public QueueLoader(String filename, Queue<PhoneCall> cq, int queueSize) {
+			voteFile = filename;
+			callQueue = cq;
+			this.queueSize = queueSize;
+		}
+		
+		public void stop() {
+			stop = true;
+		}
+		
+		public void run() {
+			try {
+				in = new BufferedReader(new FileReader(voteFile));
+				String s = in.readLine();
+				while(!stop && s != null) {
+					while(callQueue.size() < queueSize) {
+						if(s == null)
+							break;
+						callQueue.add(new PhoneCall(s));
+						s = in.readLine();
+					}
+					Thread.sleep(VoterConstants.SLEEP_TIME);
+				}
+				in.close();
+				stop();
+			}
+			catch (UnknownHostException e){
+				System.err.println("UnknownHostException");
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				System.err.println("IOException");
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private String voteFile;
 	private Queue<PhoneCall> callQueue;
     private BufferedReader in;
+    private int numLines;
 	
 	public void loadAllCalls() {
 		try {
@@ -63,11 +114,18 @@ public class PhoneCallGenerator {
 		}
 	}
 	
-	public PhoneCallGenerator(String vf) {
+	public PhoneCallGenerator(String vf, int numLines) {
 		callQueue = new LinkedList<PhoneCall>();
 		voteFile = vf;
-		loadAllCalls();
+		this.numLines = numLines;
+		QueueLoader ql = new QueueLoader(voteFile, callQueue, VoterConstants.QUEUE_SIZE);
+		Thread t = new Thread(ql);
+		t.start();
     }
+	
+	public boolean hasVotes() {
+		return callQueue.size() > 0;
+	}
 	
 	public PhoneCall receive()
 	{
