@@ -17,6 +17,7 @@ public class VoterMain {
  
     private static PhoneCallGenerator generator;
     private static EsperDataConnector dc;
+    private static StatsCollector stats;
     private static long startTime = 0;
  
     public static void GenerateVote(EPRuntime cepRT) {
@@ -35,6 +36,7 @@ public class VoterMain {
 		final int totalNumTicks = numberOfTicksToSend;
 		double ticksPerMS = -1.0;
 		long numberOfNanoSeconds = (long)numberOfSecondsWaitForCompletion * 1000000000;
+		stats = new StatsCollector();
 		
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, numberOfThreads, 99999, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		
@@ -124,6 +126,7 @@ public class VoterMain {
     	}
     	    	
     	generator = new PhoneCallGenerator(vf, numLines);
+    	stats = new StatsCollector();
     	
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
@@ -144,18 +147,18 @@ public class VoterMain {
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
         EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(100)");
+                "Vote.win:length(100)");
         EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
                 "Vote.win:length_batch(1000)");
         
-        phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
-        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
+        phoneCallStatement.addListener(new PhoneCallListener(cep, dc, stats));
+        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc, stats));
         
         System.out.println("VOTER MAIN");
  
        startThreads(numThreads, numLines, duration, cep, VoterConstants.INPUT_RATE);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
-        
+       stats.printStats();
     } 
 }

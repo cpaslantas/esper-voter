@@ -131,8 +131,11 @@ public class PhoneCallGenerator {
 	{
 		if(callQueue.isEmpty())
 			return null;
+		PhoneCall out = callQueue.poll();
+		out.startTime = System.nanoTime();
+		out.tupleStartTime = out.startTime;
 		
-		return callQueue.poll();
+		return out;
 	}
 
 }

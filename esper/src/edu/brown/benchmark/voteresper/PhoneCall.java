@@ -4,6 +4,9 @@ public class PhoneCall {
     public final long voteId;
     public final int contestantNumber;
     public final long phoneNumber;
+    public long startTime;
+    public long endTime;
+    public long tupleStartTime;
 	
     public PhoneCall(long voteId, int contestantNumber, long phoneNumber) {
         this.voteId = voteId;

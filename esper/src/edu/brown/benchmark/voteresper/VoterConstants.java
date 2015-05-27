@@ -14,7 +14,7 @@ public abstract class VoterConstants {
 	public static int INPUT_RATE = 1000;
 	
 	//public static String VOTE_DIR = "../data/";
-	public static String VOTE_DIR = "/home/john/git/esper-voter/data/";
+	public static String VOTE_DIR = "/Users/john/git/esper-voter/data/";
 	public static String VOTE_FILE = "votes-XXX.txt";
 	public static int QUEUE_SIZE = 10000;
 	public static long SLEEP_TIME = 2;
@@ -27,4 +27,9 @@ public abstract class VoterConstants {
     													"Avril Lavigne,Ashley Leggat,Eileen McGann,Sarah McLachlan,Joni Mitchell," +
     													"Mae Moore,Alanis Morissette,Emilie Mover,Anne Murray,Sam Roberts," +
     													"Serena Ryder,Tamara Sandor,Nicholas Scribner,Shania Twain,Neil Young";
+    
+    public static final String VOTE_KEY = "Vote";
+    public static final String LEADERBOARD_KEY = "Leaderboard";
+    public static final String DELETE_KEY = "Delete";
+    public static final String WORKFLOW_KEY = "Workflow";
 }

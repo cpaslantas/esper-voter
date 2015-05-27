@@ -26,7 +26,6 @@ public class VoteSender implements Runnable{
 	   }
 	   
 	   public void run() {
-		   
 		  PhoneCall pc = generator.receive();
        	  cep.getEPRuntime().sendEvent(pc);
 	   }

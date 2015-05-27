@@ -131,6 +131,16 @@ public class EPRuntimeUtil
 	        is.close();
 	    }
 	}
+    
+    public static double nanoToSeconds(long nano) {
+    	double milli = Math.round((double)nano/1000000.0);
+    	return milli/1000.0;
+    }
+    
+    public static double nanoToSeconds(double nano) {
+    	double milli = Math.round(nano/1000000.0);
+    	return milli/1000.0;
+    }
 
     private static final Log log = LogFactory.getLog(EPRuntimeUtil.class);
 }
