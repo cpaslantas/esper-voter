@@ -9,11 +9,16 @@
 package edu.brown.benchmark.voteresper;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 import com.espertech.esper.client.EPRuntime;
+
+import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -23,21 +28,27 @@ import org.apache.commons.logging.Log;
  */
 public class EPRuntimeUtil
 {
+
     public static boolean awaitCompletion(EPRuntime epRuntime,
                                        int numEventsExpected,
                                        int numSecAwait,
                                        int numSecThreadSleep,
-                                       int numSecThreadReport)
+                                       int numSecThreadReport,
+                                       long startTimeMSec,
+                  					   EsperDataConnector dc)
     {
-        log.info(".awaitCompletion Waiting for completion, expecting " + numEventsExpected +
+        System.out.println(".awaitCompletion Waiting for completion, expecting " + numEventsExpected +
                  " events within " + numSecAwait + " sec");
 
         int secondsWaitTotal = numSecAwait;
         long lastNumEventsProcessed = 0;
         int secondsUntilReport = 0;
 
-        long startTimeMSec = System.currentTimeMillis();
+        //long startTimeMSec = System.currentTimeMillis();
         long endTimeMSec = 0;
+        if(System.currentTimeMillis() - startTimeMSec >= numSecAwait) {
+        	return true;
+        }
 
         while (secondsWaitTotal > 0)
         {
@@ -56,7 +67,7 @@ public class EPRuntimeUtil
             if (secondsUntilReport > numSecThreadReport)
             {
                 long numPerSec = (currNumEventsProcessed - lastNumEventsProcessed) / numSecThreadReport;
-                log.info(".awaitCompletion received=" + epRuntime.getNumEventsEvaluated() +
+                System.out.println(".awaitCompletion received=" + epRuntime.getNumEventsEvaluated() +
                          "  processed=" + currNumEventsProcessed +
                          "  perSec=" + numPerSec);
                 lastNumEventsProcessed = currNumEventsProcessed;
@@ -64,7 +75,7 @@ public class EPRuntimeUtil
             }
 
             // Completed loop if the total event count has been reached
-            if (epRuntime.getNumEventsEvaluated() == numEventsExpected)
+            if (dc.getCompletedWorkflows() >= numEventsExpected)
             {
                 endTimeMSec = System.currentTimeMillis();
                 break;
@@ -73,7 +84,7 @@ public class EPRuntimeUtil
 
         if (endTimeMSec == 0)
         {
-            log.info(".awaitCompletion Not completed within " + numSecAwait + " seconds");
+            System.out.println(".awaitCompletion Not completed within " + numSecAwait + " seconds");
             return false;
         }
 
@@ -90,7 +101,7 @@ public class EPRuntimeUtil
             numPerSec = -1;
         }
 
-        log.info(".awaitCompletion Completed, sec=" + deltaTimeSec + "  avgPerSec=" + numPerSec);
+        System.out.println(".awaitCompletion Completed, sec=" + deltaTimeSec + "  avgPerSec=" + numPerSec);
 
         long numReceived = epRuntime.getNumEventsEvaluated();
         long numReceivedPerSec = 0;
@@ -103,7 +114,7 @@ public class EPRuntimeUtil
             numReceivedPerSec = -1;
         }
 
-        log.info(".awaitCompletion Runtime reports, numReceived=" + numReceived +
+        System.out.println(".awaitCompletion Runtime reports, numReceived=" + numReceived +
                  "  numProcessed=" + epRuntime.getNumEventsEvaluated() +
                  "  perSec=" +  numReceivedPerSec
                  );
@@ -140,6 +151,20 @@ public class EPRuntimeUtil
     public static double nanoToSeconds(double nano) {
     	double milli = Math.round(nano/1000000.0);
     	return milli/1000.0;
+    }
+    
+    public static void writeToFile(String toWrite) {
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(VoterConstants.OUT_FILE, true)));
+			out.println(toWrite);
+			out.flush();
+	    	out.close();
+		} 
+    	
+    	catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeUtil.class);

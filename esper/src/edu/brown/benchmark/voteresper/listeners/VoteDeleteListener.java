@@ -5,19 +5,19 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 
 import edu.brown.benchmark.voteresper.StatsCollector;
-import edu.brown.benchmark.voteresper.Vote;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class VoteDeleteListener implements UpdateListener {
 	EsperDataConnector dc;
 	EPServiceProvider epService;
-	StatsCollector stats;
+	//StatsCollector stats;
 	
-	public VoteDeleteListener(EPServiceProvider epService, EsperDataConnector dc, StatsCollector stats){
+	public VoteDeleteListener(EPServiceProvider epService, EsperDataConnector dc){
 		this.dc = dc;
 		this.epService = epService;
-		this.stats = stats;
+		//this.stats = stats;
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
@@ -31,6 +31,12 @@ public class VoteDeleteListener implements UpdateListener {
     		return;
     	}
     	
+    	dc.removeVotes(lowest);
     	dc.removeContestant(lowest);
+    	
+    	if(newData.length < 1)
+    		return;
+    	Vote v = (Vote)newData[0].getUnderlying();
+    	dc.stats.addStat(VoterConstants.DELETE_KEY, v);
     }
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import com.espertech.esper.client.EPServiceProvider;
 
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 
 public class VoteSender implements Runnable{
 	

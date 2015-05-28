@@ -53,8 +53,15 @@
 
   <target name="run" depends="build">
         <property name="threads" value="1"/>
-        <property name="votedir" value="/home/john/git/esper-voter/data/"/>
+        <property name="votedir" value="../data/"/>
         <property name="votefile" value="votes-XXX.txt"/>
+        <property name="inputrate" value="1000"/>
+        <property name="numlines" value="-1"/>
+        <property name="duration" value="60"/>
+        <property name="contestants" value="12"/>
+        <property name="threshold" value="10000"/>
+        <property name="noorder" value="false"/>
+        <property name="outfile" value="../data/out/out.txt"/>
 
         <echo message="***"/>
         <echo message="* Warning: running in simulation mode with no remote process to send messages"/>
@@ -65,6 +72,14 @@
             <arg value="-threads=${threads}"/>
             <arg value="-votedir=${votedir}"/>
             <arg value="-votefile=${votefile}"/>
+            <arg value="-inputrate=${inputrate}"/>
+            <arg value="-numlines=${numlines}"/>
+            <arg value="-duration=${duration}"/>
+            <arg value="-contestants=${contestants}"/>
+            <arg value="-delthreshold=${threshold}"/>
+            <arg value="-noorder=${noorder}"/>
+            <arg value="-outfile=${outfile}"/>
+            <jvmarg value="-Xmx2048m"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>

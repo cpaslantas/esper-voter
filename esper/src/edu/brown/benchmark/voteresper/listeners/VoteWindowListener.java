@@ -4,26 +4,48 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 
-import edu.brown.benchmark.voteresper.PhoneCall;
 import edu.brown.benchmark.voteresper.StatsCollector;
-import edu.brown.benchmark.voteresper.Vote;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
+import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class VoteWindowListener implements UpdateListener {
 	EsperDataConnector dc;
 	EPServiceProvider epService;
-	StatsCollector stats;
 	
-	public VoteWindowListener(EPServiceProvider epService, EsperDataConnector dc, StatsCollector stats){
+	public VoteWindowListener(EPServiceProvider epService, EsperDataConnector dc){
 		this.dc = dc;
 		this.epService = epService;
-		this.stats = stats;
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
+    	
+    	long startTime = System.nanoTime();
+    	
     	Vote v = (Vote) newData[0].getUnderlying();
-    	v.endTime = System.nanoTime();
-    	stats.addStat(VoterConstants.LEADERBOARD_KEY, v.startTime, v.endTime);
+    	
+    	if(newData.length < VoterConstants.WIN_SLIDE){
+    		System.out.println("ERROR: FEWER THAN " + VoterConstants.WIN_SLIDE + " ROWS IN WINDOW SLIDE");
+    		dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
+    	}
+    	
+    	int winSize = (int)dc.getLeaderboardSize();
+    	long cutoffVote = 0;
+    	if(winSize >= VoterConstants.WIN_SIZE) {
+    		cutoffVote = dc.getCutoffVote();
+    		dc.deleteCutoff(cutoffVote);
+    	}
+    	
+    	for(int i = 0; i < VoterConstants.WIN_SLIDE; i++) {    
+    		v = (Vote)newData[i].getUnderlying();
+    		if(cutoffVote < v.voteId)
+    			cutoffVote = v.voteId;
+    		dc.insertLeaderboard(v);
+    	}
+    	dc.setCutoffVote(cutoffVote);
+    	
+    	dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
+    	
     }
 }

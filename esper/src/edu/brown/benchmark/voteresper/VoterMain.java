@@ -4,6 +4,8 @@ import com.espertech.esper.client.*;
 
 import edu.brown.benchmark.voteresper.dataconnectors.*;
 import edu.brown.benchmark.voteresper.listeners.*;
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
+import edu.brown.benchmark.voteresper.tuples.Vote;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -12,6 +14,7 @@ import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
  
 public class VoterMain {
  
@@ -36,7 +39,6 @@ public class VoterMain {
 		final int totalNumTicks = numberOfTicksToSend;
 		double ticksPerMS = -1.0;
 		long numberOfNanoSeconds = (long)numberOfSecondsWaitForCompletion * 1000000000;
-		stats = new StatsCollector();
 		
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, numberOfThreads, 99999, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		
@@ -53,35 +55,39 @@ public class VoterMain {
 		long startTime = System.nanoTime();
 		long curTime = startTime;
 		long curDuration = 0l;
+		long startTimeMillis = System.currentTimeMillis();
+		System.out.println("entering loop - ticksPerMS = " + ticksPerMS);
 		while(vs.hasVotes() && ticksSent < totalNumTicks)
 		{
-			if(System.nanoTime() - startTime > numberOfNanoSeconds)
+			if(System.nanoTime() - startTime > numberOfNanoSeconds) {
 				break;
+			}
 			curDuration = System.nanoTime() - curTime;
-			curTime = System.nanoTime();
-			int timesToExecute = (int)((ticksPerMS * curDuration)/1000000.0);
+			
+			int timesToExecute = totalNumTicks;
+			if(inputRate > 0)
+				timesToExecute = (int)((ticksPerMS * (double)curDuration)/1000000.0);
+			if(timesToExecute > 0)
+				curTime = System.nanoTime();
 			for(int i = 0; i < timesToExecute; i++) {
-				if(!vs.hasVotes() || ticksSent >= totalNumTicks)
+				if(!vs.hasVotes() || ticksSent >= totalNumTicks){
 					break;
+				}
 				pool.execute(vs);
 				ticksSent++;
-				
-				try {Thread.sleep(VoterConstants.SLEEP_TIME);} 
-				catch (InterruptedException e) {	e.printStackTrace();}
 			}
 		}
+		long endTimeMillis = System.currentTimeMillis();
+		System.out.println("All "+ totalNumTicks + " tuples queued in " + (endTimeMillis - startTimeMillis) + "ms");
 		
 		System.out.println(".performTest Listening for completion");
-		EPRuntimeUtil.awaitCompletion(epService.getEPRuntime(), totalNumTicks, numberOfSecondsWaitForCompletion, 1, 10);
+		EPRuntimeUtil.awaitCompletion(epService.getEPRuntime(), totalNumTicks, numberOfSecondsWaitForCompletion, 1, 10, startTimeMillis, dc);
 		
 		pool.shutdown();
 	}
     
  
     public static void main(String[] args) {
-    	int numThreads = 1;
-    	int numLines = -1;
-    	int duration = 30;
     	
     	//process the arguments
     	for(int i = 0; i < args.length; i++){
@@ -93,7 +99,7 @@ public class VoterMain {
     		String param = arg[0];
     		String value = arg[1];
     		if(param.equals("-clientthreads") || param.equals("-ct")) {
-    			numThreads = new Integer(value);
+    			VoterConstants.NUM_THREADS = new Integer(value);
     		}
     		else if(param.equals("-votefile") || param.equals("-vf")) {
     			VoterConstants.VOTE_FILE = value;
@@ -104,35 +110,50 @@ public class VoterMain {
     		else if(param.equals("-inputrate") || param.equals("-ir")) {
     			VoterConstants.INPUT_RATE = new Integer(value);
     		}
-    		else if(param.equals("-votestosend") || param.equals("-vts")) {
-    			numLines = new Integer(value);
+    		else if(param.equals("-numlines") || param.equals("-nl")) {
+    			VoterConstants.NUM_LINES = new Integer(value);
     		}
     		else if(param.equals("-duration") || param.equals("-d")) {
-    			duration = new Integer(value);
+    			VoterConstants.DURATION = new Integer(value);
+    		}
+    		else if(param.equals("-contestants") || param.equals("-nc")) {
+    			VoterConstants.NUM_CONTESTANTS = new Integer(value);
+    		}
+    		else if(param.equals("-delthreshold") || param.equals("-dt")) {
+    			VoterConstants.VOTE_THRESHOLD = new Integer(value);
+    		}
+    		else if(param.equals("-noorder") || param.equals("-no")) {
+    			if(value.equals("true"))
+    				VoterConstants.NO_ORDER = true;
+    		}
+    		else if(param.equals("-outfile") || param.equals("-of")) {
+    			VoterConstants.OUT_FILE = value;
     		}
     	}
 
     	String vf = VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE;
-    	System.out.println(vf);
-    	System.out.println("Num Threads: " + numThreads);
     	
-    	if(numLines == -1) {
+    	if(VoterConstants.NUM_LINES == -1) {
 			try {
-				numLines = EPRuntimeUtil.countLines(vf);
+				VoterConstants.NUM_LINES = EPRuntimeUtil.countLines(vf);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
+    	
+    	System.out.println(VoterConstants.getConfiguration());
     	    	
-    	generator = new PhoneCallGenerator(vf, numLines);
+    	generator = new PhoneCallGenerator(vf, VoterConstants.NUM_LINES);
     	stats = new StatsCollector();
     	
     	//The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
         //configuration changes
-        cepConfig.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(true); //removes order-preserving
-        cepConfig.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(true);
+        if(VoterConstants.NO_ORDER) {
+        	cepConfig.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false); //removes order-preserving
+        	cepConfig.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+        }
         //end configuration changes
         
         cepConfig.addEventType("PhoneCall", PhoneCall.class.getName());
@@ -140,25 +161,31 @@ public class VoterMain {
         EPServiceProvider cep = EPServiceProviderManager.getProvider("VoterDemo", cepConfig);
         EPRuntime cepRT = cep.getEPRuntime();
         
-        dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, cep);
+        dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, cep, stats);
  
         EPAdministrator cepAdm = cep.getEPAdministrator();
         
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
         EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length(100)");
+                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
         EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(1000)");
+                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+                "Vote");
         
-        phoneCallStatement.addListener(new PhoneCallListener(cep, dc, stats));
-        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc, stats));
+        phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
+        voteWindowStmt.addListener(new VoteWindowListener(cep, dc));
+        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
+        voteStmt.addListener(new WorkflowEndListener(cep, dc));
         
         System.out.println("VOTER MAIN");
  
-       startThreads(numThreads, numLines, duration, cep, VoterConstants.INPUT_RATE);
+       startThreads(VoterConstants.NUM_THREADS, VoterConstants.NUM_LINES, VoterConstants.DURATION, cep, VoterConstants.INPUT_RATE);
        System.out.println("Total Time: " + (System.nanoTime() - startTime)/1000000l);
        System.out.println(dc.printStats());
-       stats.printStats();
+       EPRuntimeUtil.writeToFile(VoterConstants.getConfiguration());
+       EPRuntimeUtil.writeToFile(stats.getStats());
+       System.exit(0);
     } 
 }

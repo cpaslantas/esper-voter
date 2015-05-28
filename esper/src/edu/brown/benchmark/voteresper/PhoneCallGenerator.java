@@ -33,12 +33,15 @@ package edu.brown.benchmark.voteresper;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 
 public class PhoneCallGenerator {
 	
@@ -103,6 +106,7 @@ public class PhoneCallGenerator {
 				s = in.readLine();
 			}
 			in.close();
+			System.out.println("LOADED ALL VOTES");
 		}
 		catch (UnknownHostException e){
 			System.err.println("UnknownHostException");
@@ -118,14 +122,17 @@ public class PhoneCallGenerator {
 		callQueue = new LinkedList<PhoneCall>();
 		voteFile = vf;
 		this.numLines = numLines;
+		loadAllCalls();
+		/**
 		QueueLoader ql = new QueueLoader(voteFile, callQueue, VoterConstants.QUEUE_SIZE);
 		Thread t = new Thread(ql);
-		t.start();
+		t.start();*/
     }
 	
 	public boolean hasVotes() {
 		return callQueue.size() > 0;
 	}
+	
 	
 	public PhoneCall receive()
 	{

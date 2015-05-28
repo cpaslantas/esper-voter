@@ -11,7 +11,8 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 
-import edu.brown.benchmark.voteresper.Vote;
+import edu.brown.benchmark.voteresper.StatsCollector;
+import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class EsperTableConnector extends EsperDataConnector {
 	
@@ -62,19 +63,27 @@ public class EsperTableConnector extends EsperDataConnector {
 			"Leonard Cohen","Celine Dion","Nelly Furtado","Adam Gontier","Emily Haines",
 			"Avril Lavigne","Ashley Leggat","Eileen McGann","Sarah McLachlan","Joni Mitchell",
 			"Mae Moore","Alanis Morissette","Emilie Mover","Anne Murray","Sam Roberts",
-			"Serena Ryder","Tamara Sandor","Nicholas Scribner","Shania Twain","Neil Young"
+			"Serena Ryder","Tamara Sandor","Nicholas Scribner","Shania Twain","Neil Young",
+			"Aann Jrden","Bicah Marnes","Bustin Jieber","Bim Jryson","Bichael Muble",
+					"Ceonard Lohen","Deline Cion","Felly Nurtado","Gdam Aontier","Hmily Eaines",
+					"Lvril Aavigne","Lshley Aeggat","Mileen EcGann","Marah ScLachlan","Moni Jitchell",
+					"Nae Noore","Mlanis Aorissette","Mmilie Eover","Mnne Aurray","Ram Soberts",
+					"Rerena Syder","Samara Tandor","Sicholas Ncribner","Thania Swain","Yeil Noung"
     };
 	
 	private EPServiceProvider cep;
 	private EPRuntime cepRT;
 	private int numContestants;
 	private int allVotesEver;
+	private long cutoffVote;
 	
-	public EsperTableConnector(int numContestants, EPServiceProvider cep){
+	public EsperTableConnector(int numContestants, EPServiceProvider cep, StatsCollector stats){
+		super(stats);
 		this.numContestants = numContestants;
 		this.cep = cep;
 		this.cepRT = cep.getEPRuntime();
 		this.allVotesEver = 0;
+		this.cutoffVote = 0;
 		initializeDatabase();
 		populateDatabase(numContestants);
 	}
@@ -92,6 +101,11 @@ public class EsperTableConnector extends EsperDataConnector {
 		cepAdm.createEPL("create table area_code_state (" +
 				 "area_code int primary key, " +
 				 "state string)");
+		cepAdm.createEPL("create table leaderboard_tbl (vote_id long primary key, " +
+				 " contestant_number  int, " +
+				 "phone_number long, " + 
+				 " state string, " +
+				 "created	     long )");
 	}
 	
 	private void populateDatabase(int numContestants) {
@@ -170,11 +184,37 @@ public class EsperTableConnector extends EsperDataConnector {
 		allVotesEver++;
 		return true;
 	}
+	
+	@Override
+	public long getLeaderboardSize() {
+		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from leaderboard_tbl"); 
+		EventBean[] e = result.getArray();
+		if(e.length == 0)
+			return 0;
+		
+		return (Long)e[0].get("num_votes");
+	}
+	
+	@Override
+	public long getCutoffVote() {
+		return cutoffVote;
+	}
+	
+	@Override
+	public void setCutoffVote(long cutoff) {
+		cutoffVote = cutoff;
+	}
+	
+	@Override
+	public boolean deleteCutoff(long cutoff) {
+		cepRT.executeQuery("delete from leaderboard_tbl where vote_id <= " + cutoff);
+		return true;
+	}
 
 	@Override
-	public boolean updateLeaderboards(Vote v) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean insertLeaderboard(Vote v) {
+		cepRT.executeQuery("insert into leaderboard_tbl values (" + v.outputValues() + ")");
+		return true;
 	}
 
 	@Override
@@ -196,12 +236,18 @@ public class EsperTableConnector extends EsperDataConnector {
 		
 		return (Integer)e[0].get("contestant_number");
 	}
+	
+	@Override
+	public boolean removeVotes(int contestant) {
+		cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
+		return true;
+	}
 
 	@Override
 	public boolean removeContestant(int contestant) {
-		System.out.println(printAllVotes());
+		//System.out.println(printAllVotes());
 		System.out.println("REMOVING CONTESTANT " + contestant);
-		cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
+		//cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
 		cepRT.executeQuery("delete from contestants where contestant_number = " + contestant);
 		numContestants--;
 		return true;

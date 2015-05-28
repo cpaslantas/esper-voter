@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.brown.benchmark.voteresper.Vote;
+import edu.brown.benchmark.voteresper.StatsCollector;
+import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class DummyDataConnector extends EsperDataConnector {
 	
@@ -56,8 +57,10 @@ public class DummyDataConnector extends EsperDataConnector {
 	private int numContestants;
 	private int totalNumVotes;
 	private int allVotesEver;
+	private long cutoffVote;
 	
-	public DummyDataConnector(int numContestants){
+	public DummyDataConnector(int numContestants, StatsCollector stats){
+		super(stats);
 		this.numContestants = numContestants;
 		votes = new HashMap<Long, Vote>();
 		votesByContestant = new HashMap<Integer, Set<Vote>>();
@@ -66,6 +69,7 @@ public class DummyDataConnector extends EsperDataConnector {
 		}
 		totalNumVotes = 0;
 		allVotesEver = 0;
+		cutoffVote = 0;
 		populateAreaCodes();
 	}
 	
@@ -132,13 +136,32 @@ public class DummyDataConnector extends EsperDataConnector {
 		allVotesEver++;
 		return true;
 	}
-
-	@Override
-	public boolean updateLeaderboards(Vote v) {
-		// TODO Auto-generated method stub
-		return false;
+	
+	public long getLeaderboardSize(){
+		return -1;
 	}
 
+	@Override
+	public long getCutoffVote() {
+		return cutoffVote;
+	}
+	
+	@Override
+	public void setCutoffVote(long cutoff) {
+		cutoffVote = cutoff;
+	}
+	
+	@Override
+	public boolean deleteCutoff(long cutoff) {
+		//cepRT.executeQuery("delete from leaderboard_tbl where vote_id <= " + cutoff);
+		return true;
+	}
+
+	@Override
+	public boolean insertLeaderboard(Vote v) {
+		//cepRT.executeQuery("insert into leaderboard_tbl values (" + v.outputValues() + ")");
+		return false;
+	}
 	@Override
 	public int findLowestContestant() {
 		int lowest = -1;
@@ -166,17 +189,22 @@ public class DummyDataConnector extends EsperDataConnector {
 		}
 		return top;
 	}
-
+	
 	@Override
-	public boolean removeContestant(int contestant) {
-		if(!votesByContestant.containsKey(contestant))
-			return false;
-		
+	public boolean removeVotes(int contestant) {
+
 		Set<Vote> callsForContestant = votesByContestant.get(contestant);
 		for(Vote pc : callsForContestant) {
 			votes.remove(pc.phoneNumber);
 			totalNumVotes--;
 		}
+		return true;
+	}
+
+	@Override
+	public boolean removeContestant(int contestant) {
+		if(!votesByContestant.containsKey(contestant))
+			return false;
 		votesByContestant.remove(contestant);
 		return true;
 	}
