@@ -2,27 +2,27 @@
 
 trap "exit" INT
 INPUT=250
-FINAL=5000
-DIR="john"
+FINAL=3000
+DIR="jlmeehan"
 rm "/home/${DIR}/git/esper-voter/data/out/out.txt"
 
-while [ "${INPUT}" -lt "${FINAL}" ];
-do
-	ant run -Dthreads=1 -Dvotedir="/home/${DIR}/git/esper-voter/data/" -Dvotefile="votes-50-20000_1.txt" \
-		-Doutfile="/home/${DIR}/git/esper-voter/data/out/1-thread-serial.txt" -Dinputrate="${INPUT}" -Dcontestants=50 -Dthreshold=20000 -e
-	let INPUT+=250
-done
+#while [ "${INPUT}" -lt "${FINAL}" ];
+#do
+#	ant run -Dthreads=1 -Dvotedir="/home/${DIR}/git/esper-voter/data/" -Dvotefile="votes-50-20000_1.txt" \
+#		-Doutfile="/home/${DIR}/git/esper-voter/data/out/1-thread-serial.txt" -Dinputrate="${INPUT}" -Dcontestants=50 -Dthreshold=20000 -e
+#	let INPUT+=250
+#done
 
-let INPUT=250
+#let INPUT=250
 
-while [ "${INPUT}" -lt "${FINAL}" ];
-do
-	ant run -Dthreads=1 -Dvotedir="/home/${DIR}/git/esper-voter/data/" -Dvotefile="votes-50-20000_1.txt" \
-		-Doutfile="/home/${DIR}/git/esper-voter/data/out/1-thread.txt" -Dinputrate="${INPUT}" -Dcontestants=50 -Dthreshold=20000 -Dnoorder="true" -e
-	let INPUT+=250
-done
+#while [ "${INPUT}" -lt "${FINAL}" ];
+#do
+#	ant run -Dthreads=1 -Dvotedir="/home/${DIR}/git/esper-voter/data/" -Dvotefile="votes-50-20000_1.txt" \
+#		-Doutfile="/home/${DIR}/git/esper-voter/data/out/1-thread.txt" -Dinputrate="${INPUT}" -Dcontestants=50 -Dthreshold=20000 -Dnoorder="true" -e
+#	let INPUT+=250
+#done
 
-let INPUT=250
+#let INPUT=250
 
 while [ "${INPUT}" -lt "${FINAL}" ];
 do

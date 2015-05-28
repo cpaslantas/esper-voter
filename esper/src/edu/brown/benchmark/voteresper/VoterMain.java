@@ -98,7 +98,7 @@ public class VoterMain {
     		}
     		String param = arg[0];
     		String value = arg[1];
-    		if(param.equals("-clientthreads") || param.equals("-ct")) {
+    		if(param.equals("-threads") || param.equals("-t")) {
     			VoterConstants.NUM_THREADS = new Integer(value);
     		}
     		else if(param.equals("-votefile") || param.equals("-vf")) {
