@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -130,6 +131,8 @@ public class VoterMain {
     			VoterConstants.OUT_FILE = value;
     		}
     	}
+    	int cores = Runtime.getRuntime().availableProcessors();
+    	System.out.println("NUMBER OF CORES: " + cores);
 
     	String vf = VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE;
     	
@@ -167,17 +170,17 @@ public class VoterMain {
         
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
-        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-                "Vote");
+//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+//        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+//                "Vote");
         
         phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
-        voteWindowStmt.addListener(new VoteWindowListener(cep, dc));
-        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
-        voteStmt.addListener(new WorkflowEndListener(cep, dc));
+//        voteWindowStmt.addListener(new VoteWindowListener(cep, dc));
+//        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
+//        voteStmt.addListener(new WorkflowEndListener(cep, dc));
         
         System.out.println("VOTER MAIN");
  

@@ -155,10 +155,15 @@ public class EPRuntimeUtil
     
     public static void writeToFile(String toWrite) {
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(VoterConstants.OUT_FILE, true)));
-			out.println(toWrite);
-			out.flush();
-	    	out.close();
+			if(VoterConstants.WRITE_TO_FILE) {
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(VoterConstants.OUT_FILE, true)));
+				out.println(toWrite);
+				out.flush();
+		    	out.close();
+			}
+			else {
+				System.out.println(toWrite);
+			}
 		} 
     	
     	catch (IOException e) {

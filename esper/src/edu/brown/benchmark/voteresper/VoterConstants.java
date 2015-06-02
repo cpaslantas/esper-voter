@@ -11,20 +11,21 @@ public abstract class VoterConstants {
     public static final int BOARD_REFRESH = 100;
 	public static final int MAX_VOTES = 1; 
 	public static int NUM_CONTESTANTS = 12; 
-	public static int INPUT_RATE = 1000;
+	public static int INPUT_RATE = 10000;
 	
 	//public static String VOTE_DIR = "../data/";
 	public static String VOTE_DIR = "/home/john/git/esper-voter/data/";
 	public static String VOTE_FILE = "votes-XXX.txt";
-	public static int NUM_THREADS = 1;
+	public static int NUM_THREADS = 5;
 	public static int NUM_LINES = -1;
 	public static int DURATION = 30;
 	public static int QUEUE_SIZE = 10000;
 	public static long SLEEP_TIME = 2;
 	public static int WIN_SLIDE = 10;
 	public static int WIN_SIZE = 100;
-	public static boolean NO_ORDER = false;
+	public static boolean NO_ORDER = true;
 	public static String OUT_FILE = "/home/john/git/esper-voter/data/out/out.txt";
+	public static boolean WRITE_TO_FILE = false;
 
 	public static final String LOCAL_HOST = "localhost";
 
