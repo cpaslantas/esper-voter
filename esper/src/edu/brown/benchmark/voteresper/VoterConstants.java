@@ -7,25 +7,26 @@ public abstract class VoterConstants {
     public static final String TABLENAME_AREA_CODE_STATE = "area_code_state";
     public static final String TABLENAME_VOTES           = "votes";
     
-    public static int VOTE_THRESHOLD = 1000;
+    public static int VOTE_THRESHOLD = 20000;
     public static final int BOARD_REFRESH = 100;
 	public static final int MAX_VOTES = 1; 
 	public static int NUM_CONTESTANTS = 12; 
-	public static int INPUT_RATE = 10000;
+	public static int INPUT_RATE = 8000;
 	
 	//public static String VOTE_DIR = "../data/";
 	public static String VOTE_DIR = "/home/john/git/esper-voter/data/";
-	public static String VOTE_FILE = "votes-XXX.txt";
+	public static String VOTE_FILE = "votes-50-20000_1.txt";
 	public static int NUM_THREADS = 5;
 	public static int NUM_LINES = -1;
 	public static int DURATION = 30;
-	public static int QUEUE_SIZE = 10000;
+	//public static int QUEUE_SIZE = 10000;
 	public static long SLEEP_TIME = 2;
 	public static int WIN_SLIDE = 10;
 	public static int WIN_SIZE = 100;
-	public static boolean NO_ORDER = true;
+	public static boolean NO_ORDER = false;
 	public static String OUT_FILE = "/home/john/git/esper-voter/data/out/out.txt";
-	public static boolean WRITE_TO_FILE = false;
+	public static boolean PRINT_TO_CONSOLE = false;
+	public static boolean MEASURE_INPUT_ONLY = false;
 
 	public static final String LOCAL_HOST = "localhost";
 
@@ -45,6 +46,7 @@ public abstract class VoterConstants {
     public static final String LEADERBOARD_KEY = "Leaderboard";
     public static final String DELETE_KEY = "Delete";
     public static final String WORKFLOW_KEY = "Workflow";
+    public static final String DUMMY_KEY = "Dummy";
     
     public static String getConfiguration(){
     	String s = "-------------------------------------------\n";
@@ -58,6 +60,8 @@ public abstract class VoterConstants {
     	s += "  Delete Threshold: " + VOTE_THRESHOLD + "\n";
     	s += "  No Order: " + NO_ORDER + "\n";
     	s += "  Out File: " + OUT_FILE + "\n";
+    	s += "  Console: " + PRINT_TO_CONSOLE + "\n";
+    	s += "  Input Test: " + MEASURE_INPUT_ONLY + "\n";
     	s += "------------------------------";
     	return s;
     }

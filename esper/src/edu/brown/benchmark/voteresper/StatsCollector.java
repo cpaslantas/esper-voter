@@ -35,6 +35,7 @@ public class StatsCollector {
 		initializeValue(VoterConstants.LEADERBOARD_KEY);
 		initializeValue(VoterConstants.DELETE_KEY);
 		initializeValue(VoterConstants.WORKFLOW_KEY);
+		initializeValue(VoterConstants.DUMMY_KEY);
 	}
 	
 	public void initializeValue(String value){

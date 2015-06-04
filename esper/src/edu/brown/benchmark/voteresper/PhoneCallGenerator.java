@@ -136,9 +136,9 @@ public class PhoneCallGenerator {
 	
 	public PhoneCall receive()
 	{
-		if(callQueue.isEmpty())
-			return null;
 		PhoneCall out = callQueue.poll();
+		if(out == null)
+			return null;
 		out.startTime = System.nanoTime();
 		out.tupleStartTime = out.startTime;
 		

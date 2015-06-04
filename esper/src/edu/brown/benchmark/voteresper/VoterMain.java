@@ -79,7 +79,7 @@ public class VoterMain {
 			}
 		}
 		long endTimeMillis = System.currentTimeMillis();
-		System.out.println("All "+ totalNumTicks + " tuples queued in " + (endTimeMillis - startTimeMillis) + "ms");
+		System.out.println(ticksSent + " tuples queued in " + (endTimeMillis - startTimeMillis) + " ms");
 		
 		System.out.println(".performTest Listening for completion");
 		EPRuntimeUtil.awaitCompletion(epService.getEPRuntime(), totalNumTicks, numberOfSecondsWaitForCompletion, 1, 10, startTimeMillis, dc);
@@ -126,9 +126,23 @@ public class VoterMain {
     		else if(param.equals("-noorder") || param.equals("-no")) {
     			if(value.equals("true"))
     				VoterConstants.NO_ORDER = true;
+    			else
+    				VoterConstants.NO_ORDER = false;
     		}
     		else if(param.equals("-outfile") || param.equals("-of")) {
     			VoterConstants.OUT_FILE = value;
+    		}
+    		else if(param.equals("-console") || param.equals("-c")) {
+    			if(value.equals("true"))
+    				VoterConstants.PRINT_TO_CONSOLE = true;
+    			else
+    				VoterConstants.PRINT_TO_CONSOLE = false;
+    		}
+    		else if(param.equals("-testinput") || param.equals("-ti")) {
+    			if(value.equals("true"))
+    				VoterConstants.MEASURE_INPUT_ONLY = true;
+    			else
+    				VoterConstants.MEASURE_INPUT_ONLY = false;
     		}
     	}
     	int cores = Runtime.getRuntime().availableProcessors();
@@ -168,19 +182,27 @@ public class VoterMain {
  
         EPAdministrator cepAdm = cep.getEPAdministrator();
         
-        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
-                "PhoneCall(contestantNumber>0)");
-//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-//                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-//        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-//                "Vote");
-        
-        phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
-//        voteWindowStmt.addListener(new VoteWindowListener(cep, dc));
-//        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
-//        voteStmt.addListener(new WorkflowEndListener(cep, dc));
+        if(!VoterConstants.MEASURE_INPUT_ONLY){
+	        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+	                "PhoneCall(contestantNumber>0)");
+	        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+	                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+	        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+	                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+	        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+	                "Vote");
+	        
+	        phoneCallStatement.addListener(new PhoneCallListener(cep, dc));
+	        voteWindowStmt.addListener(new VoteWindowListener(cep, dc));
+	        voteDeleteStmt.addListener(new VoteDeleteListener(cep, dc));
+	        voteStmt.addListener(new WorkflowEndListener(cep, dc));
+        }
+        else {
+        	EPStatement dummyStmt = cepAdm.createEPL("select * from " +
+                "PhoneCall");
+        	
+        	dummyStmt.addListener(new DummyListener(cep, dc));
+        }
         
         System.out.println("VOTER MAIN");
  

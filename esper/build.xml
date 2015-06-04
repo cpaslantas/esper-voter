@@ -62,6 +62,8 @@
         <property name="threshold" value="10000"/>
         <property name="noorder" value="false"/>
         <property name="outfile" value="../data/out/out.txt"/>
+        <property name="console" value="false"/>
+        <property name="testinput" value="false"/>
 
         <echo message="***"/>
         <echo message="* Warning: running in simulation mode with no remote process to send messages"/>
@@ -79,6 +81,8 @@
             <arg value="-delthreshold=${threshold}"/>
             <arg value="-noorder=${noorder}"/>
             <arg value="-outfile=${outfile}"/>
+            <arg value="-console=${console}"/>
+            <arg value="-testinput=${testinput}"/>
             <jvmarg value="-Xmx2048m"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>

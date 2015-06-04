@@ -47,6 +47,11 @@ public class EPRuntimeUtil
         //long startTimeMSec = System.currentTimeMillis();
         long endTimeMSec = 0;
         if(System.currentTimeMillis() - startTimeMSec >= numSecAwait) {
+        	long currNumEventsProcessed = epRuntime.getNumEventsEvaluated();
+        	long numPerSec = (currNumEventsProcessed - lastNumEventsProcessed) / numSecAwait;
+        	System.out.println(".awaitCompletion received=" + epRuntime.getNumEventsEvaluated() +
+                    "  processed=" + currNumEventsProcessed +
+                    "  perSec=" + numPerSec);
         	return true;
         }
 
@@ -155,7 +160,7 @@ public class EPRuntimeUtil
     
     public static void writeToFile(String toWrite) {
 		try {
-			if(VoterConstants.WRITE_TO_FILE) {
+			if(!VoterConstants.PRINT_TO_CONSOLE) {
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(VoterConstants.OUT_FILE, true)));
 				out.println(toWrite);
 				out.flush();
