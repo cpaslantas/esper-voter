@@ -52,6 +52,7 @@ public class EPRuntimeUtil
         	System.out.println(".awaitCompletion received=" + epRuntime.getNumEventsEvaluated() +
                     "  processed=" + currNumEventsProcessed +
                     "  perSec=" + numPerSec);
+        	
         	return true;
         }
 

@@ -1,0 +1,21 @@
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 5
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 2000
+  Num Lines: 1047539
+  Duration: 60
+  Num Contestants: 50
+  Delete Threshold: 20000
+  No Order: true
+  Out File: /home/john/git/esper-voter/data/out/5-thread-serial.txt
+  Console: false
+  Input Test: false
+------------------------------
+FINAL DURATION: 60.102 SECONDS:
+Vote: 27785 TUPLES, AVG THPUT: 462 tup/sec, AVG LAT: 0.009 sec, MIN LAT: 0.001 sec, MAX LAT: 0.864 sec
+Leaderboard: 2750 TUPLES, AVG THPUT: 46 tup/sec, AVG LAT: 0.004 sec, MIN LAT: 0.001 sec, MAX LAT: 0.86 sec
+Delete: 1 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 32.346 sec, MIN LAT: 32.346 sec, MAX LAT: 32.346 sec
+Workflow: 27785 TUPLES, AVG THPUT: 462 tup/sec, AVG LAT: 0.009 sec, MIN LAT: 0.001 sec, MAX LAT: 0.87 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
