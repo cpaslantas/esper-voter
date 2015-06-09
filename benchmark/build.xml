@@ -58,17 +58,22 @@
     </target>
 
     <target name="runServer" depends="build">
+        <property name="thread" value="1"/>
+        <property name="sleep" value="1"/>
         <java classpathref="lib.classpath" classname="com.espertech.esper.example.benchmark.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
+
             <arg line="-mode STP"/>
-            <arg line="-sleep 1"/>
+            <arg line="-sleep ${sleep}"/>
+            <arg line="-thread ${thread}"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>
 
     <target name="runClient" depends="build">
+        <property name="rate" value="1000"/>
         <java classpathref="lib.classpath" classname="com.espertech.esper.example.benchmark.client.Client" fork="true">
-            <arg line="-rate 2000"/>
+            <arg line="-rate ${rate}"/>
         </java>
     </target>
 
