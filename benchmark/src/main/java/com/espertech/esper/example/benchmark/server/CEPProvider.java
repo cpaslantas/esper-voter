@@ -21,7 +21,7 @@ public class CEPProvider {
 
     public static interface ICEPProvider {
 
-        public void init(int sleepListenerMillis);
+        public void init(int sleepListenerMillis, boolean order);
 
         public void registerStatement(String statement, String statementID);
 
@@ -54,7 +54,7 @@ public class CEPProvider {
         public EsperCEPProvider() {
         }
 
-        public void init(final int _sleepListenerMillis) {
+        public void init(final int _sleepListenerMillis, boolean order) {
             sleepListenerMillis = _sleepListenerMillis;
             Configuration configuration;
 
@@ -86,8 +86,14 @@ public class CEPProvider {
 			}
 			
 			//REMOVES ORDER
-			configuration.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false); //removes order-preserving
-			configuration.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+			if(!order) {
+				configuration.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false); //removes order-preserving
+				configuration.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+				configuration.getEngineDefaults().getThreading()
+		          .setListenerDispatchPreserveOrder(false);
+				configuration.getEngineDefaults().getThreading()
+		          .setInternalTimerEnabled(false);   // remove thread that handles time advancing
+			}
 			//END REMOVE ORDER
 
 

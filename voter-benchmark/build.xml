@@ -1,0 +1,85 @@
+<project name="esper-benchmark" default="run" basedir=".">
+
+    <property name="lib" value="lib"/>
+    <property name="src" value="src/main/java"/>
+    <property name="build" value="bin"/>
+
+    <path id="lib.classpath">
+        <fileset dir="${lib}">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${build}"/>
+        <!--<pathelement location="../../esper/target/classes"/>//if no Esper is in lib we use local build
+        <fileset dir="../../esper/lib">// local dependencies 
+            <include name="*.jar"/>
+        </fileset>-->
+    </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+	<echo message="BUILD PATH: ${build}"/>
+	<echo message="LIB PATH: ${lib}"/>
+	<echo message="SRC PATH: ${src}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+     <javac classpathref="lib.classpath" srcdir="${src}" destdir="${build}">
+          <src path="${src}"/>
+      </javac>
+  </target>
+
+  <target name="build" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="."/>
+	<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="benchmark.jar" basedir="${build}"/>
+  </target>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete file="esper-benchmark.zip"/>
+    </target>
+
+    <target name="run" depends="build">
+        <echo message="***"/>
+        <echo message="* Warning: running in simulation mode with no remote process to send messages"/>
+        <echo message="* This is not the recommanded mode to perform real benchmarks"/>
+        <echo message="***"/>
+        <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
+            <arg line="-rate 4x10000 -mode STP"/>
+            <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
+        </java>
+    </target>
+
+    <target name="runServer" depends="build">
+        <property name="thread" value="1"/>
+        <property name="sleep" value="1"/>
+        <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
+            <!--<arg line="-mode STP"/> -->
+
+            <arg line="-mode STP"/>
+            <arg line="-sleep ${sleep}"/>
+            <arg line="-thread ${thread}"/>
+            <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
+        </java>
+    </target>
+
+    <target name="runClient" depends="build">
+        <property name="rate" value="1000"/>
+        <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.client.Client" fork="true">
+            <arg line="-rate ${rate}"/>
+        </java>
+    </target>
+
+    <!-- use this target to zip the example code for distribution -->
+    <target name="release" depends="clean, build">
+        <zip basedir="." destfile="esper-benchmark.zip" includes="build/**,etc/**,build.xml,run*.cmd,run*.sh,readme.txt,lib/readme.txt"/>
+    </target>
+
+</project>

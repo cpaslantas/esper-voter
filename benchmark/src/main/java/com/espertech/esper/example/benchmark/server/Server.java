@@ -55,6 +55,7 @@ public class Server extends Thread {
     private int simulationRate;
     private int simulationThread;
     private String mode;
+    private boolean order;
 
     public static final int DEFAULT_PORT = 6789;
     public static final int DEFAULT_THREADCORE = Runtime.getRuntime().availableProcessors();
@@ -64,13 +65,14 @@ public class Server extends Thread {
     public static final int DEFAULT_SIMULATION_THREAD = -1;//-1: no simulation
     public static final int DEFAULT_STAT = 5;
     public static final String DEFAULT_MODE = "NOOP";
+    public static final boolean DEFAULT_ORDER = true;
     public static final Properties MODES = new Properties();
 
     private ThreadPoolExecutor executor;//can be null
 
     private CEPProvider.ICEPProvider cepProvider;
 
-    public Server(String mode, int port, int threads, int queueMax, int sleep, final int statSec, int simulationThread, final int simulationRate) {
+    public Server(String mode, int port, int threads, int queueMax, int sleep, final int statSec, boolean order, int simulationThread, final int simulationRate) {
         super("EsperServer-main");
         this.mode = mode;
         this.port = port;
@@ -78,6 +80,7 @@ public class Server extends Thread {
         this.queueMax = queueMax;
         this.sleepListenerMillis = sleep;
         this.statSec = statSec;
+        this.order = order;
         this.simulationThread = simulationThread;
         this.simulationRate = simulationRate;
 
@@ -105,7 +108,7 @@ public class Server extends Thread {
     public synchronized void start() {
         // register ESP/CEP engine
         cepProvider = CEPProvider.getCEPProvider();
-        cepProvider.init(sleepListenerMillis);
+        cepProvider.init(sleepListenerMillis, order);
 
         // register statements
         String suffix = Server.MODES.getProperty("_SUFFIX");
@@ -226,6 +229,7 @@ public class Server extends Thread {
         int simulationThread = DEFAULT_SIMULATION_THREAD;
         String mode = DEFAULT_MODE;
         int stats = DEFAULT_STAT;
+        boolean order = DEFAULT_ORDER;
         for (int i = 0; i < argv.length; i++)
             if ("-port".equals(argv[i])) {
                 i++;
@@ -254,13 +258,20 @@ public class Server extends Thread {
                 int xIndex = argv[i].indexOf('x');
                 simulationThread = Integer.parseInt(argv[i].substring(0, xIndex));
                 simulationRate = Integer.parseInt(argv[i].substring(xIndex + 1));
-            } else {
+            } else if ("-order".equals(argv[i])) {
+            	i++;
+            	if("false".equals(argv[i]))
+            		order = false;
+            	else
+            		order = true;
+            
+    		} else {
                 printUsage();
             }
         
         System.out.println("THREAD COUNT: " + threadCore + ", MODE: " + mode);
 
-        Server bs = new Server(mode, port, threadCore, queueMax, sleep, stats, simulationThread, simulationRate);
+        Server bs = new Server(mode, port, threadCore, queueMax, sleep, stats, order, simulationThread, simulationRate);
         bs.start();
         try {
             bs.join();
@@ -279,6 +290,7 @@ public class Server extends Thread {
         System.err.println("  -stat:   " + DEFAULT_STAT + "(s)");
         System.err.println("  -rate:    " + DEFAULT_SIMULATION_RATE + "(no standalone simulation, else <n>x<evt/s> such as 2x1000)");
         System.err.println("  -mode:    " + "(default " + DEFAULT_MODE + ", choose from " + MODES.keySet().toString() + ")");
+        System.err.println("  -order:    " + "(default " + DEFAULT_ORDER + ")");
         System.err.println("Modes are read from statements.properties in the classpath");
         System.exit(1);
     }
