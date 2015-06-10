@@ -10,7 +10,7 @@ import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public abstract class EsperDataConnector {
 	
-	public StatsCollector stats;
+	//public StatsCollector stats;
 	public AtomicInteger completedWorkflows;
 	
 	public abstract boolean hasVoted(long phoneNumber);
@@ -38,20 +38,24 @@ public abstract class EsperDataConnector {
 	
 	public abstract String printStats();
 	
-	public EsperDataConnector(StatsCollector s) {
-		stats = s;
+//	public EsperDataConnector(StatsCollector s) {
+//		stats = s;
+//		completedWorkflows = new AtomicInteger(0);
+//	}
+	
+	public EsperDataConnector() {
 		completedWorkflows = new AtomicInteger(0);
 	}
 	
 	public void closeWorkflow(long startTime, long endTime) {
 		completedWorkflows.getAndIncrement();
-		stats.addStat(VoterConstants.WORKFLOW_KEY, startTime, endTime);
+		//stats.addStat(VoterConstants.WORKFLOW_KEY, startTime, endTime);
 	}
 	
 	public void closeWorkflow(EsperTuple et) {
 		et.end();
 		completedWorkflows.getAndIncrement();
-		stats.addStat(VoterConstants.WORKFLOW_KEY, et.tupleStartTime, et.endTime);
+		//stats.addStat(VoterConstants.WORKFLOW_KEY, et.tupleStartTime, et.endTime);
 	}
 	
 	public int getCompletedWorkflows() {

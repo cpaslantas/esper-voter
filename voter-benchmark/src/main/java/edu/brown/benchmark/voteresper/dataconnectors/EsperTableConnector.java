@@ -77,8 +77,8 @@ public class EsperTableConnector extends EsperDataConnector {
 	private int allVotesEver;
 	private long cutoffVote;
 	
-	public EsperTableConnector(int numContestants, EPServiceProvider cep, StatsCollector stats){
-		super(stats);
+	public EsperTableConnector(int numContestants, EPServiceProvider cep){
+		super();
 		this.numContestants = numContestants;
 		this.cep = cep;
 		this.cepRT = cep.getEPRuntime();

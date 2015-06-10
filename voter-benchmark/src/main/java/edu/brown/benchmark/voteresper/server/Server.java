@@ -8,6 +8,7 @@
 package edu.brown.benchmark.voteresper.server;
 
 import edu.brown.benchmark.voteresper.Symbols;
+import edu.brown.benchmark.voteresper.VoterConstants;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -107,7 +108,7 @@ public class Server extends Thread {
 
     public synchronized void start() {
         // register ESP/CEP engine
-        cepProvider = CEPProvider.getCEPProvider();
+        cepProvider = CEPProvider.getCEPProvider(mode);
         cepProvider.init(sleepListenerMillis, order);
 
         // register statements
@@ -115,6 +116,9 @@ public class Server extends Thread {
         if ("NOOP".equals(mode)) {
             ;
         } 
+        else if ("Voter".equals(mode)) {
+        	
+        }
         else {
             String stmtString = Server.MODES.getProperty(mode) + " " + suffix;
             System.out.println("Using " + mode + " : " + stmtString);

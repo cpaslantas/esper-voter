@@ -14,6 +14,7 @@ public class PhoneCallListener implements UpdateListener {
 	
 	EsperDataConnector dc;
 	EPServiceProvider epService;
+	int numRuns = 0;
 	
 	public PhoneCallListener(EPServiceProvider epService, EsperDataConnector dc){
 		this.dc = dc;
@@ -21,8 +22,12 @@ public class PhoneCallListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
-    	if(!dc.stats.isStarted())
-    		dc.stats.start();
+    	numRuns++;
+    	if(numRuns % 1000 == 0)
+        	System.out.println("PHONE CALL LISTENER: " + numRuns);
+    	
+//    	if(!dc.stats.isStarted())
+//    		dc.stats.start();
     	
     	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
         boolean exists = dc.realContestant(pc.contestantNumber);
@@ -30,13 +35,13 @@ public class PhoneCallListener implements UpdateListener {
         String state = dc.getState(pc.phoneNumber);
         
         if(!exists){
-            dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
+            //dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
             dc.closeWorkflow(pc);
         	return;
         }
 
         if(numVotes >= VoterConstants.MAX_VOTES){
-            dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
+            //dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
             dc.closeWorkflow(pc);
         	return;
         }
@@ -44,9 +49,9 @@ public class PhoneCallListener implements UpdateListener {
         Vote v = new Vote(pc, state, System.nanoTime());
         dc.insertVote(v);
         
-        dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
+        //dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
         v.startTime = System.nanoTime();
-        
+              
         EPRuntime cepRT = epService.getEPRuntime();
         cepRT.sendEvent(v);
     }

@@ -48,7 +48,7 @@ public abstract class VoterConstants {
     public static final String WORKFLOW_KEY = "Workflow";
     public static final String DUMMY_KEY = "Dummy";
     
-    public static final String VOTER_TYPE = "VoterCEPProvider";
+    public static final String VOTER_TYPE = "Voter";
     
     public static String getConfiguration(){
     	String s = "-------------------------------------------\n";

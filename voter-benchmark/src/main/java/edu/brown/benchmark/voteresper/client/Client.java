@@ -7,6 +7,8 @@
  **************************************************************************************/
 package edu.brown.benchmark.voteresper.client;
 
+import edu.brown.benchmark.voteresper.VoterConstants;
+
 /**
  * A client that sends MarketData information over a TCP socket to a remote server.
  * MarketData packets are sent using NIO
@@ -26,6 +28,7 @@ public class Client {
     String host;
     int port;
     int rate;
+    
 
     public Client(String host, int port, int rate) {
         this.host = host;
@@ -34,6 +37,9 @@ public class Client {
     }
 
     public static void main(String argv[]) {
+    	String mode = "Voter";
+        String voteDir = VoterConstants.VOTE_DIR;
+        String voteFile =  VoterConstants.VOTE_FILE;
         int rate = Math.max(DEFAULT_RATE, MINIMUM_RATE);
         int port = DEFAULT_PORT;
         String host = DEFAULT_HOST;
@@ -51,17 +57,40 @@ public class Client {
             } else if ("-host".equals(argv[i])) {
                 i++;
                 host = argv[i];
-            } else {
+            } else if ("-dir".equals(argv[i])) {
+            	i++;
+            	voteDir = argv[i];
+            } else if ("-file".equals(argv[i])) {
+            	i++;
+            	voteFile = argv[i];
+            }      
+            else if ("-mode".equals(argv[i])) {
+            	i++;
+            	mode = argv[i];
+            }       
+            else {
                 printUsage();
             }
 
         Client client = new Client(host, port, rate);
-        MarketClient ms = new MarketClient(client);
-        ms.start();
-        try {
-            ms.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(mode.equals("market")) {
+	        MarketClient ms = new MarketClient(client);
+	        ms.start();
+	        try {
+	            ms.join();
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+        }
+        else if(mode.equals("Voter")) {
+        	String voteDirFile = voteDir + voteFile;
+	        VoterClient vs = new VoterClient(client, voteDir + voteFile);
+	        vs.start();
+	        try {
+	        	vs.join();
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
         }
     }
 

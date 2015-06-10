@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.EsperTableConnector;
 import edu.brown.benchmark.voteresper.listeners.*;
 import edu.brown.benchmark.voteresper.server.CEPProvider.ICEPProvider;
 import edu.brown.benchmark.voteresper.tuples.*;
@@ -24,6 +25,7 @@ public class VoterCEPProvider implements ICEPProvider {
     }
 
     public void init(final int _sleepListenerMillis, boolean order) {
+    	System.out.println("VOTERCEPPROVIDER BEGIN INIT");
         sleepListenerMillis = _sleepListenerMillis;
         Configuration cepConfig;
 
@@ -68,7 +70,7 @@ public class VoterCEPProvider implements ICEPProvider {
 
 
         EPServiceProvider epService = EPServiceProviderManager.getProvider("VoterDemo", cepConfig);
-        //dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS);
+        dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, epService);
         cepAdm = epService.getEPAdministrator();
         
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
@@ -88,6 +90,7 @@ public class VoterCEPProvider implements ICEPProvider {
         
         //subscriber = new MySubscriber();
         epRuntime = epService.getEPRuntime();
+        System.out.println("VOTERCEPPROVIDER END INIT");
     }
 
     public void registerStatement(String statement, String statementID) {

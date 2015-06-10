@@ -13,6 +13,7 @@ import edu.brown.benchmark.voteresper.tuples.Vote;
 public class VoteWindowListener implements UpdateListener {
 	EsperDataConnector dc;
 	EPServiceProvider epService;
+	int numRuns = 0;
 	
 	public VoteWindowListener(EPServiceProvider epService, EsperDataConnector dc){
 		this.dc = dc;
@@ -20,6 +21,9 @@ public class VoteWindowListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
+    	numRuns++;
+    	if(numRuns % 1000 == 0)
+        	System.out.println("VOTE WINDOW LISTENER: " + numRuns);
     	
     	long startTime = System.nanoTime();
     	
@@ -27,7 +31,7 @@ public class VoteWindowListener implements UpdateListener {
     	
     	if(newData.length < VoterConstants.WIN_SLIDE){
     		System.out.println("ERROR: FEWER THAN " + VoterConstants.WIN_SLIDE + " ROWS IN WINDOW SLIDE");
-    		dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
+    		//dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
     	}
     	
     	int winSize = (int)dc.getLeaderboardSize();
@@ -45,7 +49,7 @@ public class VoteWindowListener implements UpdateListener {
     	}
     	dc.setCutoffVote(cutoffVote);
     	
-    	dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
+    	//dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
     	
     }
 }

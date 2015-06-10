@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import edu.brown.benchmark.voteresper.MarketData;
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 
 /**
  * The ClientConnection handles unmarshalling from the connected client socket and delegates the event to
@@ -80,7 +81,8 @@ public class ClientConnection extends Thread {
                     ;//System.err.println("partial packet");
                 } else {
                     packet.flip();
-                    final MarketData theEvent = MarketData.fromByteBuffer(packet);
+                    //final MarketData theEvent = MarketData.fromByteBuffer(packet);
+                    final PhoneCall theEvent = PhoneCall.fromByteBuffer(packet);
                     if (executor == null) {
                         long ns = System.nanoTime();
                         cepProvider.sendEvent(theEvent);

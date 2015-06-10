@@ -58,22 +58,31 @@
     </target>
 
     <target name="runServer" depends="build">
+        <property name="mode" value="Voter"/>
         <property name="thread" value="1"/>
         <property name="sleep" value="1"/>
+        <property name="order" value="false"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
 
-            <arg line="-mode STP"/>
+            <arg line="-mode ${mode}"/>
             <arg line="-sleep ${sleep}"/>
             <arg line="-thread ${thread}"/>
+            <arg line="-order ${order}"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>
 
     <target name="runClient" depends="build">
         <property name="rate" value="1000"/>
+        <property name="mode" value="Voter"/>
+        <property name="dir" value="/home/john/git/esper-voter/data/"/>
+        <property name="file" value="votes-50-20000_1.txt"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.client.Client" fork="true">
             <arg line="-rate ${rate}"/>
+            <arg line="-mode ${mode}"/>
+            <arg line="-dir ${dir}"/>
+            <arg line="-file ${file}"/>
         </java>
     </target>
 

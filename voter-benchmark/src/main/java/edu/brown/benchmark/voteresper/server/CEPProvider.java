@@ -41,8 +41,10 @@ public class CEPProvider {
     
     public static ICEPProvider getCEPProvider(String type) {
     	String className = System.getProperty("esper.benchmark.provider", EsperCEPProvider.class.getName());
-    	if(type.equals(VoterConstants.VOTER_TYPE))
+    	if(type.equals(VoterConstants.VOTER_TYPE)){
+    		//System.out.println("VOTER TYPE");
     		className = System.getProperty("esper.benchmark.provider", VoterCEPProvider.class.getName());
+    	}
         
         try {
             Class klass = Class.forName(className);

@@ -37,6 +37,6 @@ public class VoteDeleteListener implements UpdateListener {
     	if(newData.length < 1)
     		return;
     	Vote v = (Vote)newData[0].getUnderlying();
-    	dc.stats.addStat(VoterConstants.DELETE_KEY, v);
+    	//dc.stats.addStat(VoterConstants.DELETE_KEY, v);
     }
 }
