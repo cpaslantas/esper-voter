@@ -12,12 +12,10 @@ import edu.brown.benchmark.voteresper.tuples.Vote;
 public class VoteDeleteListener implements UpdateListener {
 	EsperDataConnector dc;
 	EPServiceProvider epService;
-	//StatsCollector stats;
 	
 	public VoteDeleteListener(EPServiceProvider epService, EsperDataConnector dc){
 		this.dc = dc;
 		this.epService = epService;
-		//this.stats = stats;
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
@@ -37,6 +35,6 @@ public class VoteDeleteListener implements UpdateListener {
     	if(newData.length < 1)
     		return;
     	Vote v = (Vote)newData[0].getUnderlying();
-    	//dc.stats.addStat(VoterConstants.DELETE_KEY, v);
+    	dc.stats.addStat(VoterConstants.DELETE_KEY, v);
     }
 }

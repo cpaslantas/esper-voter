@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="/home/john/esper-5.2.0/examples/benchmark/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="/home/john/esper-5.2.0/examples/benchmark/lib/antlr-runtime-4.1.jar"/>
 	<classpathentry kind="lib" path="/home/john/esper-5.2.0/examples/benchmark/lib/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/home/john/git/esper-voter/voter-benchmark/lib/voltdb-5.4EA1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

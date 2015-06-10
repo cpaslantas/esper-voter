@@ -10,7 +10,7 @@ public abstract class VoterConstants {
     public static int VOTE_THRESHOLD = 20000;
     public static final int BOARD_REFRESH = 100;
 	public static final int MAX_VOTES = 1; 
-	public static int NUM_CONTESTANTS = 12; 
+	public static int NUM_CONTESTANTS = 25; 
 	public static int INPUT_RATE = 8000;
 	
 	//public static String VOTE_DIR = "../data/";

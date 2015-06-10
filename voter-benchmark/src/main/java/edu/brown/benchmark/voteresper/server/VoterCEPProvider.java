@@ -2,9 +2,11 @@ package edu.brown.benchmark.voteresper.server;
 
 import com.espertech.esper.client.*;
 
+import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperTableConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
 import edu.brown.benchmark.voteresper.listeners.*;
 import edu.brown.benchmark.voteresper.server.CEPProvider.ICEPProvider;
 import edu.brown.benchmark.voteresper.tuples.*;
@@ -19,13 +21,13 @@ public class VoterCEPProvider implements ICEPProvider {
     private UpdateListener updateListener;
 
     private static int sleepListenerMillis;
-    private static EsperDataConnector dc;
+    private EsperDataConnector dc;
+    private StatsCollector stats;
 
     public VoterCEPProvider() {
     }
 
     public void init(final int _sleepListenerMillis, boolean order) {
-    	System.out.println("VOTERCEPPROVIDER BEGIN INIT");
         sleepListenerMillis = _sleepListenerMillis;
         Configuration cepConfig;
 
@@ -70,27 +72,27 @@ public class VoterCEPProvider implements ICEPProvider {
 
 
         EPServiceProvider epService = EPServiceProviderManager.getProvider("VoterDemo", cepConfig);
-        dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, epService);
+        stats = new StatsCollector();
+        dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         cepAdm = epService.getEPAdministrator();
         
-        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
-                "PhoneCall(contestantNumber>0)");
-        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-                "Vote");
+//        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+//                "PhoneCall(contestantNumber>0)");
+//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+//        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+//                "Vote");
         
-        phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
-        voteStmt.addListener(new WorkflowEndListener(epService, dc));
+//       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
+//        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+//        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+//        voteStmt.addListener(new WorkflowEndListener(epService, dc));
         
         
         //subscriber = new MySubscriber();
         epRuntime = epService.getEPRuntime();
-        System.out.println("VOTERCEPPROVIDER END INIT");
     }
 
     public void registerStatement(String statement, String statementID) {
