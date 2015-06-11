@@ -63,17 +63,21 @@ public class VoltDBConnector extends EsperDataConnector{
     public void dropTables() {
     	String vdl = "DROP VIEW v_votes_by_phone_number IF EXISTS;";
     	String vcdl = "DROP VIEW v_votes_by_contestant_number IF EXISTS;";
-    	String cdl = "DROP TABLE contestants IF EXISTS;";
-    	String ddl = "DROP TABLE votes IF EXISTS;";
+    	String acsdl = "DROP TABLE area_code_state IF EXISTS;";
+    	String lbtdl = "DROP TABLE leaderboard_tbl IF EXISTS;";
+    	String cdl = "DROP TABLE contestants_tbl IF EXISTS;";
+    	String ddl = "DROP TABLE votes_tbl IF EXISTS;";
     	
     	executeQuery(vdl);
     	executeQuery(vcdl);
     	executeQuery(cdl);
     	executeQuery(ddl);
+    	executeQuery(acsdl);
+    	executeQuery(lbtdl);
     }
     
     public void initializeDatabase() {
-        String cdl = "CREATE TABLE contestants\n" +
+        String cdl = "CREATE TABLE contestants_tbl\n" +
                         "(\n" +
                         "  contestant_number integer     NOT NULL\n" +
                         ",  contestant_name varchar(50)   NOT NULL\n" +
@@ -84,17 +88,28 @@ public class VoltDBConnector extends EsperDataConnector{
                         ");";
         
         // AUTOINCREMENT ?
-        String ddl =  "CREATE TABLE votes\n" +
+        String ddl =  "CREATE TABLE votes_tbl\n" +
                         "(\n" +
-                        "  vote_id            bigint     NOT NULL,\n" +
-                        "  phone_number       bigint     NOT NULL\n" +
-                        ", contestant_number  integer    NOT NULL REFERENCES contestants (contestant_number)\n" +
+                        "  vote_id            bigint     NOT NULL\n" +
+                        ", contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)\n" +
+                        ", phone_number       bigint     NOT NULL\n" +
+                        ", state              varchar(2) NOT NULL\n" +
                         ", created            timestamp  NOT NULL" +
                         ", CONSTRAINT PK_votes PRIMARY KEY\n" +
                         "  (\n" +
                         "    vote_id\n" +
                         "  )\n" +
                         ");";
+        
+        String acs = "create table area_code_state (" +
+				 "area_code int primary key, " +
+				 "state varchar(2) NOT NULL);";
+        
+		String lbt = "create table leaderboard_tbl (vote_id bigint primary key, " +
+				 " contestant_number  int NOT NULL, " +
+				 "phone_number bigint NOT NULL, " + 
+				 " state varchar(2) NOT NULL, " +
+				 "created	     bigint NOT NULL)";
         
         String vdl = "CREATE VIEW v_votes_by_phone_number\n" +
                 "(\n" +
@@ -104,7 +119,7 @@ public class VoltDBConnector extends EsperDataConnector{
                 "AS\n" +
                 "   SELECT phone_number\n" +
                 "        , COUNT(*)\n" +
-                "     FROM votes\n" +
+                "     FROM votes_tbl\n" +
                 " GROUP BY phone_number\n" +
                 ";";
         
@@ -116,13 +131,15 @@ public class VoltDBConnector extends EsperDataConnector{
                 "AS\n" +
                 "   SELECT contestant_number\n" +
                 "        , COUNT(*)\n" +
-                "     FROM votes\n" +
+                "     FROM votes_tbl\n" +
                 " GROUP BY contestant_number\n" +
                 ";";
 
         dropTables();
         executeQuery(cdl);
         executeQuery(ddl);
+        executeQuery(acs);
+        executeQuery(lbt);
         executeQuery(vdl);
         executeQuery(vcdl);
         
@@ -132,16 +149,16 @@ public class VoltDBConnector extends EsperDataConnector{
 		for(int i = 0; i < numContestants; i++) {
 			insertContestant(i+1, CONTESTANT_NAMES[i]);
 		}
-//		assert areaCodes.length == states.length;
-//		for(int i = 0; i < areaCodes.length; i++) {
-//			cepRT.executeQuery("insert into area_code_state values (" + areaCodes[i] + ",'" + states[i] + "')");
-//		}
+		assert areaCodes.length == states.length;
+		for(int i = 0; i < areaCodes.length; i++) {
+			executeQuery("insert into area_code_state values (" + areaCodes[i] + ",'" + states[i] + "')");
+		}
 	}
     
-    public void executeQuery(String query) {
+    public boolean executeQuery(String query) {
         try {
             Statement createContestantStmt = dbconn.createStatement();
-            createContestantStmt.execute(query);
+            return createContestantStmt.execute(query);
 
 //            SQLWarning warn = createContestantStmt.getWarnings();
 //            if (warn != null)
@@ -149,12 +166,27 @@ public class VoltDBConnector extends EsperDataConnector{
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        
+    }
+    
+    public ResultSet executeQueryWithResult(String query) {
+        try {
+            Statement stmt = dbconn.createStatement();
+            return stmt.executeQuery(query);
+
+//            SQLWarning warn = createContestantStmt.getWarnings();
+//            if (warn != null)
+//                System.out.println("warn: " + warn.getMessage());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public void insertContestant(int id, String name) {
-        final String idl = "INSERT INTO contestants (contestant_number, contestant_name) VALUES (" + id + ", '" + name + "');";
+        final String idl = "INSERT INTO contestants_tbl (contestant_number, contestant_name) VALUES (" + id + ", '" + name + "');";
     
         try {
             Statement stmt = dbconn.createStatement();
@@ -164,67 +196,6 @@ public class VoltDBConnector extends EsperDataConnector{
         }
     }
     
-    public void insertVote(long phoneNumber, int contestant){
-        String idl = "INSERT INTO votes (vote_id, phone_number, contestant_number, created) VALUES (?, ?, ?, ?, ?);";
-        String[] values = {Long.toString(lastVoteId), Long.toString(phoneNumber), Integer.toString(contestant), new Timestamp(System.currentTimeMillis()).toString() };
-        
-        try {
-            Statement stmt = dbconn.createStatement();
-            stmt.executeUpdate(idl, values);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public boolean isContestant(int id) {
-        String cdl = "SELECT contestant_number FROM contestants WHERE contestant_number = " + id + ";";
-
-        try {
-            Statement stmt = dbconn.createStatement();
-            ResultSet rs = stmt.executeQuery(cdl);
-            if (!rs.next()){
-                return false;
-            } else {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return false;
-    }
-
-    public boolean voteExists(long phoneNumber) {
-        String cdl = "SELECT * FROM votes WHERE phone_number = " + phoneNumber + ";";
-
-        try {
-            Statement stmt = dbconn.createStatement();
-            ResultSet rs = stmt.executeQuery(cdl);
-            if (!rs.next()){
-                return true;
-            } else {
-                return false;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
-//    public void removeContestant(int id) {
-//        String vdl = "DELETE FROM votes WHERE contestant_number = ?;";
-//        String cdl = "DELETE FROM contestants WHERE contestant_number = ?;";
-//
-//        try {
-//            Statement stmt = dbconn.createStatement();
-//            stmt.executeUpdate(vdl, id);
-//            stmt.executeUpdate(cdl, id);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-    
     @Override
 	public boolean hasVoted(long phoneNumber) {
 		return numTimesVoted(phoneNumber) > 0;
@@ -232,52 +203,82 @@ public class VoltDBConnector extends EsperDataConnector{
 
 	@Override
 	public boolean realContestant(int contestant) {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number from contestants where contestant_number = " + contestant); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select contestant_number from contestants_tbl where contestant_number = " + contestant);
+			
+			if(result == null || result.first() == false)
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return false;
-		else
-			return true;
+		}
 	}
 
 	@Override
 	public long numTimesVoted(long phoneNumber) {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from votes_tbl where phone_number = " + phoneNumber); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select count(*) as num_votes from votes_tbl where phone_number = " + phoneNumber);
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getLong("num_votes");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return -1;
-		
-		return (Long)e[0].get("num_votes");
+		}
 	}
 
 	@Override
 	public String getState(long phoneNumber) {
-		short areaCode = (short)(phoneNumber/10000000l);
-		EPOnDemandQueryResult result = cepRT.executeQuery("select state from area_code_state where area_code = " + areaCode); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			short areaCode = (short)(phoneNumber/10000000l);
+			ResultSet result = executeQueryWithResult("select state from area_code_state where area_code = " + areaCode);
+			
+			if(result == null || result.first() == false)
+				return "XX";
+			else
+				return result.getString("state");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return "XX";
-		
-		return (String)e[0].get("state");
+		}
 	}
 	
 	public long getNumRemainingContestants() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_contestants from contestants"); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select count(*) as num_contestants from contestants_tbl");
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getLong("num_contestants");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return -1;
-		
-		return (Long)e[0].get("num_contestants");
+		}
 	}
 
 	@Override
 	public long getNumVotes() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from votes_tbl"); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select count(*) as num_votes from votes_tbl");
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getLong("num_votes");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return -1;
-		
-		return (Long)e[0].get("num_votes");
+		}
 	}
 	
 	@Override
@@ -287,19 +288,27 @@ public class VoltDBConnector extends EsperDataConnector{
 
 	@Override
 	public boolean insertVote(Vote v) {
-		cepRT.executeQuery("insert into votes_tbl values (" + v.outputValues() + ")"); 					
-		allVotesEver++;
-		return true;
+		boolean success = executeQuery("insert into votes_tbl (" + Vote.outputColumns() + " ) values (" + v.outputValues() + ")");
+		if(success)
+			allVotesEver++;
+		
+		return success;
 	}
 	
 	@Override
 	public long getLeaderboardSize() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select count(*) as num_votes from leaderboard_tbl"); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
-			return 0;
-		
-		return (Long)e[0].get("num_votes");
+		try {
+			ResultSet result = executeQueryWithResult("select count(*) as num_votes from leaderboard_tbl");
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getLong("num_votes");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 	@Override
@@ -314,66 +323,84 @@ public class VoltDBConnector extends EsperDataConnector{
 	
 	@Override
 	public boolean deleteCutoff(long cutoff) {
-		cepRT.executeQuery("delete from leaderboard_tbl where vote_id <= " + cutoff);
-		return true;
+		return executeQuery("delete from leaderboard_tbl where vote_id <= " + cutoff);
 	}
 
 	@Override
 	public boolean insertLeaderboard(Vote v) {
-		cepRT.executeQuery("insert into leaderboard_tbl values (" + v.outputValues() + ")");
-		return true;
+		return executeQuery("insert into leaderboard_tbl values (" + v.outputValues() + ")");
 	}
 
 	@Override
 	public int findLowestContestant() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes, contestant_number desc"); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select contestant_number, count(*) as num_votes from v_votes_by_contestant_number order by num_votes, contestant_number desc");
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getInt("contestant_number");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return -1;
-		
-		return (Integer)e[0].get("contestant_number");
+		}
 	}
 	
 	@Override
 	public int findTopContestant() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes desc, contestant_number asc"); 
-		EventBean[] e = result.getArray();
-		if(e.length == 0)
+		try {
+			ResultSet result = executeQueryWithResult("select contestant_number, count(*) as num_votes from v_votes_by_contestant_number order by num_votes desc, contestant_number asc");
+			
+			if(result == null || result.first() == false)
+				return -1;
+			else
+				return result.getInt("contestant_number");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return -1;
-		
-		return (Integer)e[0].get("contestant_number");
+		}
 	}
 	
 	@Override
 	public boolean removeVotes(int contestant) {
-		cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
-		return true;
+		return executeQuery("delete from votes_tbl where contestant_number = " + contestant);
 	}
 
 	@Override
 	public boolean removeContestant(int contestant) {
 		//System.out.println(printAllVotes());
 		System.out.println("REMOVING CONTESTANT " + contestant);
-		//cepRT.executeQuery("delete from votes_tbl where contestant_number = " + contestant);
-		cepRT.executeQuery("delete from contestants where contestant_number = " + contestant);
-		numContestants--;
-		return true;
+		boolean result = executeQuery("delete from contestants_tbl where contestant_number = " + contestant);
+		if(result)
+			numContestants--;
+		return result;
 	}
 	
 	public String printAllVotes() {
-		EPOnDemandQueryResult result = cepRT.executeQuery("select contestant_number, count(*) as num_votes from votes_tbl group by contestant_number order by num_votes, contestant_number desc"); 
-		EventBean[] e = result.getArray();
-		
-		if(e.length == 0)
-			return "";
-		
-		String o = "ALL VOTES: " + allVotesEver + "\n";
-		o += "CUR VOTES: " + getNumVotes() + "\n";
-		for(int i = 0; i < e.length; i++) {
-			o += e[i].get("contestant_number") + "," + e[i].get("num_votes") + "\n";
+		try {
+			ResultSet result = executeQueryWithResult("select contestant_number, count(*) as num_votes from v_votes_by_contestant_number order by num_votes, contestant_number desc"); 
+			
+			if(result == null || result.first() == false)
+				return "NO VOTES FOUND\n";
+			
+			String o = "ALL VOTES: " + allVotesEver + "\n";
+			o += "CUR VOTES: " + getNumVotes() + "\n";
+			
+			do {
+				o += result.getInt("contestant_number") + "," + result.getInt("num_votes") + "\n";
+			}
+			while(result.next());
+			
+			o += "-----------\n";
+			return o;		
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "ERROR: Could not print votes\n";
 		}
-		o += "-----------\n";
-		return o;		
 	}
 	
 	public String printStats(){

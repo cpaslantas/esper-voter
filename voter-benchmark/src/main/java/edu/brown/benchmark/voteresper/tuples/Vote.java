@@ -41,6 +41,10 @@ public class Vote extends EsperTuple{
     	return "VoteID: " + voteId + " ContestantNumber: " + contestantNumber + " PhoneNumber: " + phoneNumber;
     }
     
+    public static String outputColumns() {
+    	return new String("vote_id,contestant_number,phone_number,state,created");
+    }
+    
     public String outputValues() {
     	return new String(voteId + "," + contestantNumber + "," + phoneNumber + ",'" + state + "'," + timestamp);
     }

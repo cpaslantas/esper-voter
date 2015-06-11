@@ -76,8 +76,8 @@ public class VoterCEPProvider implements ICEPProvider {
         dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         cepAdm = epService.getEPAdministrator();
         
-//        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
-//                "PhoneCall(contestantNumber>0)");
+        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+                "PhoneCall(contestantNumber>0)");
 //        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
 //                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
 //        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
@@ -85,7 +85,7 @@ public class VoterCEPProvider implements ICEPProvider {
 //        EPStatement voteStmt = cepAdm.createEPL("select * from " +
 //                "Vote");
         
-//       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
+       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
 //        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
 //        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
 //        voteStmt.addListener(new WorkflowEndListener(epService, dc));
