@@ -156,7 +156,8 @@ public class Server extends Thread {
 
             executor = new ThreadPoolExecutor(
                     threadCore,
-                    Runtime.getRuntime().availableProcessors() * threadCore,
+                    threadCore,
+                    //Runtime.getRuntime().availableProcessors() * threadCore,
                     10, TimeUnit.SECONDS,
                     queue,
                     new ThreadFactory() {
