@@ -70,6 +70,7 @@
         <property name="file" value="votes-50-20000_1.txt"/>
         <property name="outfile" value="/home/john/git/esper-voter/data/out/out.txt"/>
         <property name="duration" value="60000"/>
+        <property name="queue" value="-1"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
 
@@ -85,6 +86,7 @@
             <arg line="-file ${file}"/>
             <arg line="-outfile ${outfile}"/>
             <arg line="-duration ${duration}"/>
+            <arg line="-queue ${queue}"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>
