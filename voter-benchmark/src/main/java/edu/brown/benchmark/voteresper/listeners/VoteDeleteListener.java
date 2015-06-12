@@ -19,7 +19,7 @@ public class VoteDeleteListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
-    	System.out.println("VoteDeleteListener - " + dc.getAllVotesEver());
+    	//System.out.println("VoteDeleteListener - " + dc.getAllVotesEver());
     	
     	int lowest = dc.findLowestContestant();
     	long numContestants = dc.getNumRemainingContestants();

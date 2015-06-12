@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class StatsHolder {
 
+	public static long startTime = System.currentTimeMillis();
     public static int[] DEFAULT_MS = new int[]{1, 5, 10, 50, 100, 250, 500, 1000};//ms
     public static int[] DEFAULT_NS = new int[]{5, 10, 15, 20, 25, 50, 100, 500, 1000, 2500, 5000};//micro secs
     static {
@@ -87,5 +88,13 @@ public class StatsHolder {
         for (Stats s : STATS) {
             s.reset();
         }
+    }
+    
+    public static void start() {
+    	startTime = System.currentTimeMillis();
+    }
+    
+    public static long curTime() {
+    	return System.currentTimeMillis() - startTime;
     }
 }

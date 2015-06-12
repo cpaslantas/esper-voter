@@ -62,6 +62,14 @@
         <property name="thread" value="1"/>
         <property name="sleep" value="1"/>
         <property name="order" value="false"/>
+        <property name="stat" value="5"/>
+        <property name="backend" value="voltdb"/>
+        <property name="threshold" value="20000"/>
+        <property name="contestants" value="50"/>
+        <property name="dir" value="/home/john/git/esper-voter/voter-benchmark/"/>
+        <property name="file" value="votes-50-20000_1.txt"/>
+        <property name="outfile" value="/home/john/git/esper-voter/data/out/out.txt"/>
+        <property name="duration" value="60000"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
 
@@ -69,6 +77,14 @@
             <arg line="-sleep ${sleep}"/>
             <arg line="-thread ${thread}"/>
             <arg line="-order ${order}"/>
+            <arg line="-stat ${stat}"/>
+            <arg line="-backend ${backend}"/>
+            <arg line="-threshold ${threshold}"/>
+            <arg line="-contestants ${contestants}"/>
+            <arg line="-dir ${dir}"/>
+            <arg line="-file ${file}"/>
+            <arg line="-outfile ${outfile}"/>
+            <arg line="-duration ${duration}"/>
             <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
         </java>
     </target>
@@ -78,11 +94,13 @@
         <property name="mode" value="Voter"/>
         <property name="dir" value="/home/john/git/esper-voter/data/"/>
         <property name="file" value="votes-50-20000_1.txt"/>
+        <property name="duration" value="60000"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.client.Client" fork="true">
             <arg line="-rate ${rate}"/>
             <arg line="-mode ${mode}"/>
             <arg line="-dir ${dir}"/>
             <arg line="-file ${file}"/>
+            <arg line="-duration ${duration}"/>
         </java>
     </target>
 

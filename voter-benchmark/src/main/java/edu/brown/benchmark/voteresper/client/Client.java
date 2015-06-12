@@ -20,14 +20,16 @@ import edu.brown.benchmark.voteresper.VoterConstants;
  */
 public class Client {
 
-    public static final int MINIMUM_RATE = 1000;
+    public static final int MINIMUM_RATE = 100;
     public static final int DEFAULT_PORT = 6789;
-    public static final int DEFAULT_RATE = 4000;
+    public static final int DEFAULT_RATE = 1000;
+    public static final int DEFAULT_DURATION = 60000;
     public static final String DEFAULT_HOST = "localhost";
 
     String host;
     int port;
     int rate;
+    int duration;
     
 
     public Client(String host, int port, int rate) {
@@ -43,6 +45,7 @@ public class Client {
         int rate = Math.max(DEFAULT_RATE, MINIMUM_RATE);
         int port = DEFAULT_PORT;
         String host = DEFAULT_HOST;
+        int duration = DEFAULT_DURATION;
         for (int i = 0; i < argv.length; i++)
             if ("-rate".equals(argv[i])) {
                 i++;
@@ -67,7 +70,10 @@ public class Client {
             else if ("-mode".equals(argv[i])) {
             	i++;
             	mode = argv[i];
-            }       
+            } else if ("-duration".equals(argv[i])) {
+            	i++;
+            	duration = Integer.parseInt(argv[i]);
+            }    
             else {
                 printUsage();
             }
@@ -82,9 +88,9 @@ public class Client {
 	            e.printStackTrace();
 	        }
         }
-        else if(mode.equals("Voter")) {
+        else if(mode.equalsIgnoreCase("voter")) {
         	String voteDirFile = voteDir + voteFile;
-	        VoterClient vs = new VoterClient(client, voteDir + voteFile);
+	        VoterClient vs = new VoterClient(client, voteDir + voteFile, duration);
 	        vs.start();
 	        try {
 	        	vs.join();

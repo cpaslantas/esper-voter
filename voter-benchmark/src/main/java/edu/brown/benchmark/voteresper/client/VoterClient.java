@@ -34,10 +34,12 @@ public class VoterClient extends Thread {
     private Queue<PhoneCall> callQueue;
     private String voteFile;
     private int numLines;
+    private final int DURATION_MS;
 
-    public VoterClient(Client client, String vf) {
+    public VoterClient(Client client, String vf, int duration) {
         this.client = client;
         this.voteFile = vf;
+        this.DURATION_MS = duration;
         callQueue = new LinkedList<PhoneCall>();
         try {
 			this.numLines = EPRuntimeUtil.countLines(vf);
@@ -85,8 +87,9 @@ public class VoterClient extends Thread {
         int countLast5s = 0;
         int sleepLast5s = 0;
         long lastThroughputTick = System.currentTimeMillis();
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(PhoneCall.SIZE / 8);
+        long startTime = System.currentTimeMillis();
         try {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(PhoneCall.SIZE / 8);
             do {
                 long ms = System.currentTimeMillis();
                 for (int i = 0; i < eventPer50ms; i++) {
@@ -124,10 +127,17 @@ public class VoterClient extends Thread {
                     sleepLast5s += sleep;
                     Thread.sleep(sleep);
                 }
-            } while (!callQueue.isEmpty());
+            } while (!callQueue.isEmpty());// && System.currentTimeMillis() - startTime < DURATION_MS);
         } catch (Throwable t) {
             t.printStackTrace();
             System.err.println("Error sending data to server. Did server disconnect?");
+        } finally {
+        	try {
+				socketChannel.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
 }

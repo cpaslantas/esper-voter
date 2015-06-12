@@ -57,6 +57,7 @@ public class Server extends Thread {
     private int simulationThread;
     private String mode;
     private boolean order;
+    private String backend;
 
     public static final int DEFAULT_PORT = 6789;
     public static final int DEFAULT_THREADCORE = Runtime.getRuntime().availableProcessors();
@@ -67,13 +68,14 @@ public class Server extends Thread {
     public static final int DEFAULT_STAT = 5;
     public static final String DEFAULT_MODE = "NOOP";
     public static final boolean DEFAULT_ORDER = true;
+    public static final String DEFAULT_BACKEND = "voltdb";
     public static final Properties MODES = new Properties();
 
     private ThreadPoolExecutor executor;//can be null
 
     private CEPProvider.ICEPProvider cepProvider;
 
-    public Server(String mode, int port, int threads, int queueMax, int sleep, final int statSec, boolean order, int simulationThread, final int simulationRate) {
+    public Server(String mode, int port, int threads, int queueMax, int sleep, final int statSec, boolean order, String backend, int simulationThread, final int simulationRate) {
         super("EsperServer-main");
         this.mode = mode;
         this.port = port;
@@ -82,6 +84,7 @@ public class Server extends Thread {
         this.sleepListenerMillis = sleep;
         this.statSec = statSec;
         this.order = order;
+        this.backend = backend;
         this.simulationThread = simulationThread;
         this.simulationRate = simulationRate;
 
@@ -109,7 +112,7 @@ public class Server extends Thread {
     public synchronized void start() {
         // register ESP/CEP engine
         cepProvider = CEPProvider.getCEPProvider(mode);
-        cepProvider.init(sleepListenerMillis, order);
+        cepProvider.init(sleepListenerMillis, order, backend);
 
         // register statements
         String suffix = Server.MODES.getProperty("_SUFFIX");
@@ -234,6 +237,7 @@ public class Server extends Thread {
         String mode = DEFAULT_MODE;
         int stats = DEFAULT_STAT;
         boolean order = DEFAULT_ORDER;
+        String backend = DEFAULT_BACKEND;
         for (int i = 0; i < argv.length; i++)
             if ("-port".equals(argv[i])) {
                 i++;
@@ -269,13 +273,34 @@ public class Server extends Thread {
             	else
             		order = true;
             
-    		} else {
+    		} else if ("-backend".equals(argv[i])) {
+            	i++;
+            	backend = argv[i];            
+    		} else if ("-threshold".equals(argv[i])) {
+                i++;
+                VoterConstants.VOTE_THRESHOLD = Integer.parseInt(argv[i]);
+            } else if ("-contestants".equals(argv[i])) {
+                i++;
+                VoterConstants.NUM_CONTESTANTS = Integer.parseInt(argv[i]);
+            } else if ("-dir".equals(argv[i])) {
+            	i++;
+            	VoterConstants.VOTE_DIR = argv[i];            
+    		} else if ("-file".equals(argv[i])) {
+            	i++;
+            	VoterConstants.VOTE_FILE = argv[i];            
+    		} else if ("-outfile".equals(argv[i])) {
+            	i++;
+            	VoterConstants.OUT_FILE = argv[i];            
+    		} else if ("-duration".equals(argv[i])) {
+                i++;
+                VoterConstants.DURATION = Integer.parseInt(argv[i]);
+            } else {
                 printUsage();
             }
         
         System.out.println("THREAD COUNT: " + threadCore + ", MODE: " + mode);
 
-        Server bs = new Server(mode, port, threadCore, queueMax, sleep, stats, order, simulationThread, simulationRate);
+        Server bs = new Server(mode, port, threadCore, queueMax, sleep, stats, order, backend, simulationThread, simulationRate);
         bs.start();
         try {
             bs.join();

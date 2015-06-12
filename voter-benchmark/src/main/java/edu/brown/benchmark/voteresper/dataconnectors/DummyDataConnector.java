@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.espertech.esper.client.EPServiceProvider;
+
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
@@ -51,6 +53,7 @@ public class DummyDataConnector extends EsperDataConnector {
 		"VA","VA","VA","VA","VA","VA","VT","WA","WA","WA","WA","WA","WA","WI","WI",
 		"WI","WI","WI","WV","WY"};
 	
+	private EPServiceProvider cep;
 	private HashMap<Long, Vote> votes;
 	private HashMap<Integer, Set<Vote>> votesByContestant;
 	private HashMap<Short, String> stateAreaCode;
@@ -59,9 +62,10 @@ public class DummyDataConnector extends EsperDataConnector {
 	private int allVotesEver;
 	private long cutoffVote;
 	
-	public DummyDataConnector(int numContestants, StatsCollector stats){
+	public DummyDataConnector(int numContestants, EPServiceProvider cep, StatsCollector stats){
 		super(stats);
 		this.numContestants = numContestants;
+		this.cep = cep;
 		votes = new HashMap<Long, Vote>();
 		votesByContestant = new HashMap<Integer, Set<Vote>>();
 		for(int i = 0; i < numContestants; i++) {

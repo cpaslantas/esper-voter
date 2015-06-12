@@ -4,9 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.espertech.esper.client.*;
 
-import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.server.StatsHolder;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
@@ -22,12 +22,14 @@ public class PhoneCallListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
-    	numRuns++;
-    	if(numRuns % 1000 == 0)
-        	System.out.println("PHONE CALL LISTENER: " + numRuns);
+//    	numRuns++;
+//    	if(numRuns % 1000 == 0)
+//        	System.out.println("PHONE CALL LISTENER: " + numRuns);
     	
-    	if(!dc.stats.isStarted())
+    	if(!dc.stats.isStarted()){
     		dc.stats.start();
+    		StatsHolder.start();
+    	}
     	
     	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
         boolean exists = dc.realContestant(pc.contestantNumber);

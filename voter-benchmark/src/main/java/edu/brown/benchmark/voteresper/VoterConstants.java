@@ -10,7 +10,7 @@ public abstract class VoterConstants {
     public static int VOTE_THRESHOLD = 20000;
     public static final int BOARD_REFRESH = 100;
 	public static final int MAX_VOTES = 1; 
-	public static int NUM_CONTESTANTS = 25; 
+	public static int NUM_CONTESTANTS = 50; 
 	public static int INPUT_RATE = 8000;
 	
 	//public static String VOTE_DIR = "../data/";
@@ -18,14 +18,14 @@ public abstract class VoterConstants {
 	public static String VOTE_FILE = "votes-50-20000_1.txt";
 	public static int NUM_THREADS = 5;
 	public static int NUM_LINES = -1;
-	public static int DURATION = 30;
+	public static int DURATION = 30000;
 	//public static int QUEUE_SIZE = 10000;
 	public static long SLEEP_TIME = 2;
 	public static int WIN_SLIDE = 10;
 	public static int WIN_SIZE = 100;
 	public static boolean NO_ORDER = false;
 	public static String OUT_FILE = "/home/john/git/esper-voter/data/out/out.txt";
-	public static boolean PRINT_TO_CONSOLE = false;
+	public static boolean PRINT_TO_CONSOLE = true;
 	public static boolean MEASURE_INPUT_ONLY = false;
 
 	public static final String LOCAL_HOST = "localhost";
@@ -47,6 +47,10 @@ public abstract class VoterConstants {
     public static final String DELETE_KEY = "Delete";
     public static final String WORKFLOW_KEY = "Workflow";
     public static final String DUMMY_KEY = "Dummy";
+    
+    public static final String DUMMY_BACKEND = "dummy";
+    public static final String ESPER_BACKEND = "esper";
+    public static final String VOLTDB_BACKEND = "voltdb";
     
     public static final String VOTER_TYPE = "Voter";
     

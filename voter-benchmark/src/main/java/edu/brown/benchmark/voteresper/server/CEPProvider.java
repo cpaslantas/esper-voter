@@ -20,11 +20,13 @@ public class CEPProvider {
 
     public static interface ICEPProvider {
 
-        public void init(int sleepListenerMillis, boolean order);
+        public void init(int sleepListenerMillis, boolean order, String backend);
 
         public void registerStatement(String statement, String statementID);
 
         public void sendEvent(Object theEvent);
+        
+        public StatsCollector getStatsCollector();
     }
 
     public static ICEPProvider getCEPProvider() {
@@ -70,7 +72,7 @@ public class CEPProvider {
         public EsperCEPProvider() {
         }
 
-        public void init(final int _sleepListenerMillis, boolean order) {
+        public void init(final int _sleepListenerMillis, boolean order, String backend) {
             sleepListenerMillis = _sleepListenerMillis;
             Configuration configuration;
 
@@ -131,6 +133,10 @@ public class CEPProvider {
 
         public void sendEvent(Object theEvent) {
             epRuntime.sendEvent(theEvent);
+        }
+        
+        public StatsCollector getStatsCollector() {
+        	return null;
         }
     }
 

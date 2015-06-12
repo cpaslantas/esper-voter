@@ -334,7 +334,7 @@ public class VoltDBConnector extends EsperDataConnector{
 	@Override
 	public int findLowestContestant() {
 		try {
-			ResultSet result = executeQueryWithResult("select contestant_number, count(*) as num_votes from v_votes_by_contestant_number order by num_votes, contestant_number desc");
+			ResultSet result = executeQueryWithResult("select contestant_number, num_votes from v_votes_by_contestant_number order by num_votes, contestant_number desc");
 			
 			if(result == null || result.first() == false)
 				return -1;
@@ -350,7 +350,7 @@ public class VoltDBConnector extends EsperDataConnector{
 	@Override
 	public int findTopContestant() {
 		try {
-			ResultSet result = executeQueryWithResult("select contestant_number, count(*) as num_votes from v_votes_by_contestant_number order by num_votes desc, contestant_number asc");
+			ResultSet result = executeQueryWithResult("select contestant_number, num_votes from v_votes_by_contestant_number order by num_votes desc, contestant_number asc");
 			
 			if(result == null || result.first() == false)
 				return -1;

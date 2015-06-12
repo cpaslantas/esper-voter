@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
+import edu.brown.benchmark.voteresper.dataconnectors.DummyDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperTableConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
@@ -16,19 +17,13 @@ public class VoterCEPProvider implements ICEPProvider {
     private EPAdministrator cepAdm;
 
     private EPRuntime epRuntime;
-
-    // only one of those 2 will be attached to statement depending on the -mode selected
-    private UpdateListener updateListener;
-
-    private static int sleepListenerMillis;
     private EsperDataConnector dc;
     private StatsCollector stats;
 
     public VoterCEPProvider() {
     }
 
-    public void init(final int _sleepListenerMillis, boolean order) {
-        sleepListenerMillis = _sleepListenerMillis;
+    public void init(final int _sleepListenerMillis, boolean order, String backend) {
         Configuration cepConfig;
 
         // EsperHA enablement - if available
@@ -73,22 +68,31 @@ public class VoterCEPProvider implements ICEPProvider {
 
         EPServiceProvider epService = EPServiceProviderManager.getProvider("VoterDemo", cepConfig);
         stats = new StatsCollector();
-        dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        
+        if(backend.equalsIgnoreCase(VoterConstants.ESPER_BACKEND))
+        	dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        else if (backend.equalsIgnoreCase(VoterConstants.VOLTDB_BACKEND))
+        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        else if (backend.equalsIgnoreCase(VoterConstants.DUMMY_BACKEND))
+        	dc = new DummyDataConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        else
+        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        
         cepAdm = epService.getEPAdministrator();
         
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
-//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-//                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-//        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-//                "Vote");
+        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+                "Vote");
         
        phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-//        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-//        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
-//        voteStmt.addListener(new WorkflowEndListener(epService, dc));
+        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+        voteStmt.addListener(new WorkflowEndListener(epService, dc));
         
         
         //subscriber = new MySubscriber();
@@ -101,5 +105,9 @@ public class VoterCEPProvider implements ICEPProvider {
 
     public void sendEvent(Object theEvent) {
         epRuntime.sendEvent(theEvent);
+    }
+    
+    public StatsCollector getStatsCollector() {
+    	return stats;
     }
 }

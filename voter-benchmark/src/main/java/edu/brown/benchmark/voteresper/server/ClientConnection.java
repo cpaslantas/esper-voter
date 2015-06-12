@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import edu.brown.benchmark.voteresper.EPRuntimeUtil;
 import edu.brown.benchmark.voteresper.MarketData;
+import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 
 /**
@@ -112,15 +114,22 @@ public class ClientConnection extends Thread {
                     }
                     packet.clear();
                 }
-            } while (true);
+            } while (StatsHolder.curTime() < VoterConstants.DURATION);
         } catch (Throwable t) {
             t.printStackTrace();
             System.err.println("Error receiving data from client. Did client disconnect?");
         } finally {
+            
+//            StatsHolder.dump("engine");
+//            StatsHolder.dump("server");
+//            StatsHolder.dump("endToEnd");
+            ClientConnection.dumpStats(statSec);
             CLIENT_CONNECTIONS.remove(myID);
             StatsHolder.remove(StatsHolder.getEngine());
             StatsHolder.remove(StatsHolder.getServer());
             StatsHolder.remove(StatsHolder.getEndToEnd());
+            EPRuntimeUtil.writeToFile(cepProvider.getStatsCollector().getStats());
+            System.exit(0);
         }
     }
 }

@@ -21,9 +21,9 @@ public class VoteWindowListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
-    	numRuns++;
-    	if(numRuns % 1000 == 0)
-        	System.out.println("VOTE WINDOW LISTENER: " + numRuns);
+//    	numRuns++;
+//    	if(numRuns % 1000 == 0)
+//        	System.out.println("VOTE WINDOW LISTENER: " + numRuns);
     	
     	long startTime = System.nanoTime();
     	
