@@ -16,7 +16,7 @@ import java.sql.*;
 /**
  * Created by cpa on 5/19/15.
  */
-public class VoltDBConnector extends EsperDataConnector{
+public class VoltDBAdHocConnector extends EsperDataConnector{
     Connection dbconn;
     private static long lastVoteId = 0;
     private EPServiceProvider cep;
@@ -25,7 +25,7 @@ public class VoltDBConnector extends EsperDataConnector{
 	private int allVotesEver;
 	private long cutoffVote;
     
-    public VoltDBConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
+    public VoltDBAdHocConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
     	super(stats);
     	this.numContestants = numContestants;
     	this.cep = cep;

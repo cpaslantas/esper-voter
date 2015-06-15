@@ -7,7 +7,7 @@ import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.DummyDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperTableConnector;
-import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBAdHocConnector;
 import edu.brown.benchmark.voteresper.listeners.*;
 import edu.brown.benchmark.voteresper.server.CEPProvider.ICEPProvider;
 import edu.brown.benchmark.voteresper.tuples.*;
@@ -72,11 +72,11 @@ public class VoterCEPProvider implements ICEPProvider {
         if(backend.equalsIgnoreCase(VoterConstants.ESPER_BACKEND))
         	dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else if (backend.equalsIgnoreCase(VoterConstants.VOLTDB_BACKEND))
-        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        	dc = new VoltDBAdHocConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else if (backend.equalsIgnoreCase(VoterConstants.DUMMY_BACKEND))
         	dc = new DummyDataConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else
-        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        	dc = new VoltDBAdHocConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         
         cepAdm = epService.getEPAdministrator();
         
