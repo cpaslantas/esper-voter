@@ -285,7 +285,7 @@ public class Server extends Thread {
                 VoterConstants.NUM_CONTESTANTS = Integer.parseInt(argv[i]);
             } else if ("-dir".equals(argv[i])) {
             	i++;
-            	VoterConstants.VOTE_DIR = argv[i];            
+            	VoterConstants.changeRootDir(argv[i]);
     		} else if ("-file".equals(argv[i])) {
             	i++;
             	VoterConstants.VOTE_FILE = argv[i];            

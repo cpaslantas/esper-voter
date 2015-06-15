@@ -1,4 +1,4 @@
-package edu.brown.benchmark.voteresper.voltsp;
+//package edu.brown.benchmark.voteresper.voltsp;
 
 /* This file is part of VoltDB.
  * Copyright (C) 2008-2012 VoltDB Inc.
@@ -35,17 +35,15 @@ import org.voltdb.VoltProcedure;
 import org.voltdb.VoltTable;
 import org.voltdb.types.TimestampType;
 
-import edu.brown.benchmark.voteresper.VoterConstants;
-
 @ProcInfo (
-	//partitionInfo = "contestants.contestant_number:1",
+	partitionInfo = "votes.phone_number:1",
     singlePartition = true
 )
 public class GenerateLeaderboardSP extends VoltProcedure {
 	
 	public static final int WIN_SLIDE = 10;
 	public static final int WIN_SIZE = 100;
-	public static final int VOTE_THRESHOLD = 1
+	public static final int VOTE_THRESHOLD = 20000;
 	
     // Put the vote into the staging window
     public final SQLStmt insertVoteStagingStmt = new SQLStmt(

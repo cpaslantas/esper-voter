@@ -1,4 +1,4 @@
-package edu.brown.benchmark.voteresper.voltsp;
+//package edu.brown.benchmark.voteresper.voltsp;
 
 /* This file is part of VoltDB.
  * Copyright (C) 2008-2012 VoltDB Inc.
@@ -35,10 +35,10 @@ import org.voltdb.VoltProcedure;
 import org.voltdb.VoltTable;
 import org.voltdb.types.TimestampType;
 
-@ProcInfo (
-	//partitionInfo = "contestants.contestant_number:1",
-    singlePartition = true
-)
+//@ProcInfo (
+//	partitionInfo = "contestants.contestant_number:1",
+//    singlePartition = true
+//)
 public class DeleteContestantSP extends VoltProcedure {
     
     public final SQLStmt deleteLowestContestant = new SQLStmt(

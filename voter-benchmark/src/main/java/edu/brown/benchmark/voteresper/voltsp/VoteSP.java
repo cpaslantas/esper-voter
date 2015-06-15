@@ -1,4 +1,4 @@
-package edu.brown.benchmark.voteresper.voltsp;
+//package edu.brown.benchmark.voteresper.voltsp;
 
 /* This file is part of VoltDB.
  * Copyright (C) 2008-2012 VoltDB Inc.

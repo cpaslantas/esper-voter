@@ -7,6 +7,7 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 
+import edu.brown.benchmark.voteresper.ScriptRunner;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.tuples.Vote;
@@ -24,6 +25,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
 	private int numContestants;
 	private int allVotesEver;
 	private long cutoffVote;
+	private ScriptRunner sqlrunner;
     
     public VoltDBAdHocConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
     	super(stats);
@@ -33,6 +35,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
     	this.allVotesEver = 0;
     	this.cutoffVote = 0;
         dbconn = getConnection();
+		this.sqlrunner = new ScriptRunner(dbconn, true, false);
         if(dbconn == null) {
             System.err.println("JDBC Connection Error: Connection failed.");
         }
@@ -134,14 +137,20 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
                 "     FROM votes_tbl\n" +
                 " GROUP BY contestant_number\n" +
                 ";";
+        
+        String fullDDL = "file " + VoterConstants.DDL_DIR + VoterConstants.DDL_FILE + ";";
 
         dropTables();
-        executeQuery(cdl);
-        executeQuery(ddl);
-        executeQuery(acs);
-        executeQuery(lbt);
-        executeQuery(vdl);
-        executeQuery(vcdl);
+//        executeQuery(cdl);
+//        executeQuery(ddl);
+//        executeQuery(acs);
+//        executeQuery(lbt);
+//        executeQuery(vdl);
+//        executeQuery(vcdl);
+        executeQuery(fullDDL);
+        
+        Statement createContestantStmt = dbconn.createStatement();
+        dbconn.
         
     }
     

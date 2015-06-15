@@ -14,7 +14,12 @@ public abstract class VoterConstants {
 	public static int INPUT_RATE = 8000;
 	
 	//public static String VOTE_DIR = "../data/";
-	public static String VOTE_DIR = "/home/john/git/esper-voter/data/";
+	public static String ROOT_DIR = "/home/john/git/esper-voter/";
+	public static String VOTE_DIR_SUFFIX = "data/";
+	public static String DDL_DIR_SUFFIX = "voter-benchmark/src/main/java/edu/brown/benchmark/voteresper/voltsp/";
+	public static String VOTE_DIR = ROOT_DIR + VOTE_DIR_SUFFIX;
+	public static String DDL_DIR = ROOT_DIR + DDL_DIR_SUFFIX;
+	public static String DDL_FILE = "voter-voltdb.sql";
 	public static String VOTE_FILE = "votes-50-20000_1.txt";
 	public static int NUM_THREADS = 5;
 	public static int NUM_LINES = -1;
@@ -70,5 +75,11 @@ public abstract class VoterConstants {
     	s += "  Input Test: " + MEASURE_INPUT_ONLY + "\n";
     	s += "------------------------------";
     	return s;
+    }
+    
+    public static void changeRootDir(String newRoot) {
+    	ROOT_DIR = newRoot;
+    	VOTE_DIR = newRoot + VOTE_DIR_SUFFIX;
+    	DDL_DIR = newRoot + DDL_DIR_SUFFIX;
     }
 }
