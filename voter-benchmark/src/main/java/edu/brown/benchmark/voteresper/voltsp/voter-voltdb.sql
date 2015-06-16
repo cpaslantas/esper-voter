@@ -1,18 +1,18 @@
 DROP VIEW v_votes_by_phone_number IF EXISTS;
 DROP VIEW v_votes_by_contestant_number_state IF EXISTS;
 DROP VIEW v_votes_by_contestant IF EXISTS;
-DROP TABLE contestants IF EXISTS;
+DROP TABLE contestants_tbl IF EXISTS;
 DROP TABLE area_code_state IF EXISTS;
-DROP TABLE votes IF EXISTS;
+DROP TABLE votes_tbl IF EXISTS;
 DROP TABLE proc_one_out IF EXISTS;
 DROP TABLE w_rows IF EXISTS;
-DROP TABLE leaderboard IF EXISTS;
+DROP TABLE leaderboard_tbl IF EXISTS;
 DROP TABLE votes_count IF EXISTS;
 DROP TABLE staging_count IF EXISTS;
 DROP TABLE current_win_id IF EXISTS;
 
 -- contestants table holds the contestants numbers (for voting) and names
-CREATE TABLE contestants
+CREATE TABLE contestants_tbl
 (
   contestant_number integer     NOT NULL
 , contestant_name   varchar(50) NOT NULL
@@ -22,7 +22,7 @@ CREATE TABLE contestants
   )
 );
 
-PARTITION TABLE contestants ON COLUMN contestant_number;
+PARTITION TABLE contestants_tbl ON COLUMN contestant_number;
 
 -- Map of Area Codes and States for geolocation classification of incoming calls
 CREATE TABLE area_code_state
@@ -38,25 +38,25 @@ PARTITION TABLE area_code_state ON COLUMN area_code;
 
 -- votes table holds every valid vote.
 --   voterdemohstores are not allowed to submit more than <x> votes, x is passed to client application
-CREATE TABLE votes
+CREATE TABLE votes_tbl
 (
   vote_id            bigint     NOT NULL,
   phone_number       bigint     NOT NULL
 , state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
-, contestant_number  integer    NOT NULL REFERENCES contestants (contestant_number)
+, contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)
 , created	     timestamp  NOT NULL
 --, CONSTRAINT PK_votes ASSUMEUNIQUE ( vote_id )
  --PARTITION BY ( phone_number )
 );
-CREATE ASSUMEUNIQUE INDEX IX_votes ON votes(vote_id);
-PARTITION TABLE votes ON COLUMN phone_number;
+CREATE ASSUMEUNIQUE INDEX IX_votes ON votes_tbl(vote_id);
+PARTITION TABLE votes_tbl ON COLUMN phone_number;
 
 CREATE TABLE proc_one_out
 (
   vote_id            bigint     NOT NULL,
   phone_number       bigint     NOT NULL
 , state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
-, contestant_number  integer    NOT NULL REFERENCES contestants (contestant_number)
+, contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)
 , created	     timestamp    NOT NULL
 );
 
@@ -67,7 +67,7 @@ CREATE TABLE w_rows
   vote_id            bigint     NOT NULL,
   phone_number       bigint     NOT NULL
 , state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
-, contestant_number  integer    NOT NULL REFERENCES contestants (contestant_number)
+, contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)
 , created            timestamp  NOT NULL
 , win_id             bigint     NOT NULL
 , stage_flag	     int        NOT NULL
@@ -79,7 +79,7 @@ PARTITION TABLE w_rows ON COLUMN phone_number;
 
 CREATE INDEX IX_stageflag ON w_rows(stage_flag);
 
-CREATE TABLE leaderboard
+CREATE TABLE leaderboard_tbl
 (
   --phone_number       bigint    NOT NULL,
   contestant_number  integer   NOT NULL
@@ -90,7 +90,7 @@ CREATE TABLE leaderboard
   )
 );
 
-PARTITION TABLE leaderboard ON COLUMN contestant_number;
+PARTITION TABLE leaderboard_tbl ON COLUMN contestant_number;
 
 CREATE TABLE votes_count
 (
@@ -125,7 +125,7 @@ CREATE VIEW v_votes_by_phone_number
 AS
    SELECT phone_number
         , COUNT(*)
-     FROM votes
+     FROM votes_tbl
  GROUP BY phone_number
 ;
 
@@ -140,7 +140,7 @@ AS
    SELECT contestant_number
         , state
         , COUNT(*)
-     FROM votes
+     FROM votes_tbl
  GROUP BY contestant_number
         , state
 ;
@@ -153,7 +153,7 @@ CREATE VIEW v_votes_by_contestant
 AS
    SELECT contestant_number
         , COUNT(*)
-     FROM votes
+     FROM votes_tbl
  GROUP BY contestant_number
 ;
 
@@ -167,3 +167,7 @@ AS
 --   FROM w_rows t
 --   GROUP BY t.contestant_number
 --;
+
+--CREATE PROCEDURE from class VoteSP;
+--CREATE PROCEDURE from class GenerateLeaderboardSP;
+--CREATE PROCEDURE from class DeleteContestantSP;

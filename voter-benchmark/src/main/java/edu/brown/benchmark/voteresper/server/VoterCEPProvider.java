@@ -80,19 +80,19 @@ public class VoterCEPProvider implements ICEPProvider {
         
         cepAdm = epService.getEPAdministrator();
         
-        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
-                "PhoneCall(contestantNumber>0)");
-        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-                "Vote");
-        
-       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
-        voteStmt.addListener(new WorkflowEndListener(epService, dc));
+//        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+//                "PhoneCall(contestantNumber>0)");
+//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+//        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
+//                "Vote");
+//        
+//       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
+//        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+//        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+//        voteStmt.addListener(new WorkflowEndListener(epService, dc));
         
         
         //subscriber = new MySubscriber();

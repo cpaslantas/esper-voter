@@ -66,11 +66,16 @@
         <property name="backend" value="voltdb"/>
         <property name="threshold" value="20000"/>
         <property name="contestants" value="50"/>
-        <property name="dir" value="/home/john/git/esper-voter/voter-benchmark/"/>
+        <property name="dir" value="/home/john/git/esper-voter/"/>
         <property name="file" value="votes-50-20000_1.txt"/>
         <property name="outfile" value="/home/john/git/esper-voter/data/out/out.txt"/>
         <property name="duration" value="60000"/>
         <property name="queue" value="-1"/>
+        <property name="buildDBFile" value="reloadDB.sh"/>
+        <property name="rootdir" value="/home/john"/>
+        <exec executable="${rootdir}/git/esper-voter/voter-benchmark/${buildDBFile}">
+            <arg value="${rootdir}"/>
+        </exec>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
 
@@ -87,7 +92,7 @@
             <arg line="-outfile ${outfile}"/>
             <arg line="-duration ${duration}"/>
             <arg line="-queue ${queue}"/>
-            <classpath location="etc"/><!-- for etc/log4j.xml and statement discovery -->
+            <classpath location="etc"/><!--for etc/log4j.xml and statement discovery -->
         </java>
     </target>
 

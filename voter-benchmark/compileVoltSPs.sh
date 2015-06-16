@@ -10,6 +10,6 @@ javac -cp "$CLASSPATH:${curdir}/lib/*" DeleteContestantSP.java
 
 jar cvf storedprocs.jar *.class
 
-voltdir="/home/john/git/voltdb/bin/"
-${voltdir}sqlcmd
-file /home/john/git/esper-voter/voter-benchmark/src/main/java/edu/brown/benchmark/voteresper/voltsp/voter-voltdb.sql;
+#voltdir="/home/john/git/voltdb/bin/"
+#${voltdir}sqlcmd
+#file /home/john/git/esper-voter/voter-benchmark/src/main/java/edu/brown/benchmark/voteresper/voltsp/voter-voltdb.sql;

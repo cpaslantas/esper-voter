@@ -9,11 +9,13 @@
 package edu.brown.benchmark.voteresper;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import com.espertech.esper.client.EPRuntime;
@@ -177,6 +179,30 @@ public class EPRuntimeUtil
 			e.printStackTrace();
 		}
     }
+    
+    public static String executeCommand(String command) {
+    	 
+		StringBuffer output = new StringBuffer();
+ 
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(command);
+			p.waitFor();
+			BufferedReader reader = 
+                            new BufferedReader(new InputStreamReader(p.getInputStream()));
+ 
+                        String line = "";			
+			while ((line = reader.readLine())!= null) {
+				output.append(line + "\n");
+			}
+ 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+ 
+		return output.toString();
+ 
+	}
 
     private static final Log log = LogFactory.getLog(EPRuntimeUtil.class);
 }
