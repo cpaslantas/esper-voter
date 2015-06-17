@@ -429,8 +429,8 @@ public class VoltDBConnector extends EsperDataConnector{
 				return null;
 			else {
 				
-				Vote v = new Vote(result.getLong("vote_id"), result.getInt("contestant_number"), result.getLong("phone_number"), result.getString("state"), System.nanoTime(), pc.getInTime() );
-				return v;
+				//Vote v = new Vote(result.getLong("vote_id"), result.getInt("contestant_number"), result.getLong("phone_number"), result.getString("state"), System.nanoTime(), pc.getInTime() );
+				return null;
 			}
 		}
 		catch(SQLException e) {

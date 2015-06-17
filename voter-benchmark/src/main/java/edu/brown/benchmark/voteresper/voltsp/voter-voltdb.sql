@@ -1,3 +1,7 @@
+DROP PROCEDURE VoteSP IF EXISTS;
+DROP PROCEDURE GenerateLeaderboardSP IF EXISTS;
+DROP PROCEDURE DeleteContestantSP IF EXISTS;
+
 DROP VIEW v_votes_by_phone_number IF EXISTS;
 DROP VIEW v_votes_by_contestant_number_state IF EXISTS;
 DROP VIEW v_votes_by_contestant IF EXISTS;
@@ -22,7 +26,7 @@ CREATE TABLE contestants_tbl
   )
 );
 
-PARTITION TABLE contestants_tbl ON COLUMN contestant_number;
+--PARTITION TABLE contestants_tbl ON COLUMN contestant_number;
 
 -- Map of Area Codes and States for geolocation classification of incoming calls
 CREATE TABLE area_code_state
@@ -34,7 +38,7 @@ CREATE TABLE area_code_state
     area_code
   )
 );
-PARTITION TABLE area_code_state ON COLUMN area_code;
+--PARTITION TABLE area_code_state ON COLUMN area_code;
 
 -- votes table holds every valid vote.
 --   voterdemohstores are not allowed to submit more than <x> votes, x is passed to client application
@@ -90,7 +94,7 @@ CREATE TABLE leaderboard_tbl
   )
 );
 
-PARTITION TABLE leaderboard_tbl ON COLUMN contestant_number;
+--PARTITION TABLE leaderboard_tbl ON COLUMN contestant_number;
 
 CREATE TABLE votes_count
 (
@@ -98,7 +102,7 @@ CREATE TABLE votes_count
   cnt		     integer    NOT NULL
 );
 
-PARTITION TABLE votes_count ON COLUMN row_id;
+--PARTITION TABLE votes_count ON COLUMN row_id;
 
 CREATE TABLE staging_count
 (
@@ -106,7 +110,7 @@ CREATE TABLE staging_count
   cnt		     integer    NOT NULL
 );
 
-PARTITION TABLE staging_count ON COLUMN row_id;
+--PARTITION TABLE staging_count ON COLUMN row_id;
 
 CREATE TABLE current_win_id
 (
@@ -114,7 +118,7 @@ CREATE TABLE current_win_id
   win_id     bigint    NOT NULL
 );
 
-PARTITION TABLE current_win_id ON COLUMN row_id;
+--PARTITION TABLE current_win_id ON COLUMN row_id;
 
 -- rollup of votes by phone number, used to reject excessive voting
 CREATE VIEW v_votes_by_phone_number
