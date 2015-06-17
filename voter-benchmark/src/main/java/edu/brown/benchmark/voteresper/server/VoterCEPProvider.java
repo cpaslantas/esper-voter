@@ -7,7 +7,7 @@ import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.DummyDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperTableConnector;
-import edu.brown.benchmark.voteresper.dataconnectors.VoltDBAdHocConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
 import edu.brown.benchmark.voteresper.listeners.*;
 import edu.brown.benchmark.voteresper.server.CEPProvider.ICEPProvider;
 import edu.brown.benchmark.voteresper.tuples.*;
@@ -72,16 +72,16 @@ public class VoterCEPProvider implements ICEPProvider {
         if(backend.equalsIgnoreCase(VoterConstants.ESPER_BACKEND))
         	dc = new EsperTableConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else if (backend.equalsIgnoreCase(VoterConstants.VOLTDB_BACKEND))
-        	dc = new VoltDBAdHocConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else if (backend.equalsIgnoreCase(VoterConstants.DUMMY_BACKEND))
         	dc = new DummyDataConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         else
-        	dc = new VoltDBAdHocConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
+        	dc = new VoltDBConnector(VoterConstants.NUM_CONTESTANTS, epService, stats);
         
         cepAdm = epService.getEPAdministrator();
         
-//        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
-//                "PhoneCall(contestantNumber>0)");
+        EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
+                "PhoneCall(contestantNumber>0)");
 //        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
 //                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
 //        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
@@ -89,7 +89,7 @@ public class VoterCEPProvider implements ICEPProvider {
 //        EPStatement voteStmt = cepAdm.createEPL("select * from " +
 //                "Vote");
 //        
-//       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
+       phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
 //        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
 //        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
 //        voteStmt.addListener(new WorkflowEndListener(epService, dc));

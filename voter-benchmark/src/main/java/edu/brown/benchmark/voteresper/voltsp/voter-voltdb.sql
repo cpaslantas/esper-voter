@@ -168,6 +168,6 @@ AS
 --   GROUP BY t.contestant_number
 --;
 
---CREATE PROCEDURE from class VoteSP;
---CREATE PROCEDURE from class GenerateLeaderboardSP;
---CREATE PROCEDURE from class DeleteContestantSP;
+CREATE PROCEDURE from class VoteSP;
+CREATE PROCEDURE from class GenerateLeaderboardSP;
+CREATE PROCEDURE from class DeleteContestantSP;

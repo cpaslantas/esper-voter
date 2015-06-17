@@ -42,16 +42,16 @@ import org.voltdb.types.TimestampType;
 public class DeleteContestantSP extends VoltProcedure {
     
     public final SQLStmt deleteLowestContestant = new SQLStmt(
-		"DELETE FROM contestants WHERE contestant_number = ?;"
+		"DELETE FROM contestants_tbl WHERE contestant_number = ?;"
     );
     
     public final SQLStmt deleteLowestVotes = new SQLStmt(
-		"DELETE FROM votes WHERE contestant_number = ?;"
+		"DELETE FROM votes_tbl WHERE contestant_number = ?;"
     );
     
  // Pull aggregate from window
     public final SQLStmt deleteLeaderBoardStmt = new SQLStmt(
-		"DELETE FROM leaderboard WHERE contestant_number = ?;"
+		"DELETE FROM leaderboard_tbl WHERE contestant_number = ?;"
     );
     
 	

@@ -10,6 +10,7 @@ import com.espertech.esper.client.EventBean;
 import edu.brown.benchmark.voteresper.EPRuntimeUtil;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
+import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
 import java.sql.*;
@@ -17,7 +18,7 @@ import java.sql.*;
 /**
  * Created by cpa on 5/19/15.
  */
-public class VoltDBAdHocConnector extends EsperDataConnector{
+public class VoltDBConnector extends EsperDataConnector{
     Connection dbconn;
     private static long lastVoteId = 0;
     private EPServiceProvider cep;
@@ -26,7 +27,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
 	private int allVotesEver;
 	private long cutoffVote;
     
-    public VoltDBAdHocConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
+    public VoltDBConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
     	super(stats);
     	this.numContestants = numContestants;
     	this.cep = cep;
@@ -413,5 +414,28 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
 		out += "Current Loser: " + findLowestContestant() + "\n";
 		out += "Remaining Contestants: " + getNumRemainingContestants();
 		return out;
+	}
+	
+	public Vote runSP1(PhoneCall pc) {
+		try {
+			CallableStatement stmt = dbconn.prepareCall("{call VoteSP(?,?,?,?)}");
+			stmt.setLong(1, pc.voteId);
+			stmt.setLong(2, pc.phoneNumber);
+			stmt.setInt(3, pc.contestantNumber);
+			stmt.setInt(4, VoterConstants.MAX_VOTES);
+			ResultSet result = stmt.executeQuery();
+			
+			if(result == null || result.first() == false)
+				return null;
+			else {
+				
+				Vote v = new Vote(result.getLong("vote_id"), result.getInt("contestant_number"), result.getLong("phone_number"), result.getString("state"), System.nanoTime(), pc.getInTime() );
+				return v;
+			}
+		}
+		catch(SQLException e) {
+			System.err.println(e.getMessage());
+			return null;
+		}
 	}
 }

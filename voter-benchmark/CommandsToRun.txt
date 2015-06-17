@@ -1,0 +1,7 @@
+~/git/esper-voter/voter-benchmark $ ant runServer -Dthread=1 -Dorder=true -Dduration=20000 -Dbackend=voltdb
+ant runClient -Drate=1000 -Dduration=60000
+
+~/git/voltdb $ voltdb create --http=8083
+~/git/esper-voter/voter-benchmark $ ./reloadDB.sh "/home/john"
+~/git/voltdb/bin $ ./sqlcmd
+~/git/esper-voter/voter-benchmark/src/main/java/edu/brown/benchmark/voteresper/voltsp

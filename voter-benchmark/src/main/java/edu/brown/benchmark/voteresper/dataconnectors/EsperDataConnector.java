@@ -2,6 +2,8 @@ package edu.brown.benchmark.voteresper.dataconnectors;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.voltdb.VoltTable;
+
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.tuples.EsperTuple;

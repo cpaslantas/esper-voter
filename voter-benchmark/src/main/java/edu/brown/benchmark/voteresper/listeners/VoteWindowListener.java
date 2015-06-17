@@ -32,6 +32,7 @@ public class VoteWindowListener implements UpdateListener {
     	if(newData.length < VoterConstants.WIN_SLIDE){
     		System.out.println("ERROR: FEWER THAN " + VoterConstants.WIN_SLIDE + " ROWS IN WINDOW SLIDE");
     		dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
+    		return;
     	}
     	
     	int winSize = (int)dc.getLeaderboardSize();

@@ -3,6 +3,7 @@ rootdir=$1
 sqldir="${rootdir}/git/voltdb/bin"
 filedir="${rootdir}/git/esper-voter/voter-benchmark/src/main/java/edu/brown/benchmark/voteresper/voltsp"
 
+./compileVoltSPs.sh
 ${sqldir}/sqlcmd <<EOD
 load classes ${filedir}/storedprocs.jar;
 EOD

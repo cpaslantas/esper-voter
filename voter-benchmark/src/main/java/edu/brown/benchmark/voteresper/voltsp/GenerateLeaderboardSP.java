@@ -36,7 +36,7 @@ import org.voltdb.VoltTable;
 import org.voltdb.types.TimestampType;
 
 @ProcInfo (
-	partitionInfo = "votes.phone_number:1",
+	partitionInfo = "votes_tbl.phone_number:1",
     singlePartition = true
 )
 public class GenerateLeaderboardSP extends VoltProcedure {
@@ -96,12 +96,12 @@ public class GenerateLeaderboardSP extends VoltProcedure {
     
  // Pull aggregate from window
     public final SQLStmt deleteLeaderBoardStmt = new SQLStmt(
-		"DELETE FROM leaderboard;"
+		"DELETE FROM leaderboard_tbl;"
     );
     
     // Pull aggregate from window
     public final SQLStmt updateLeaderBoardStmt = new SQLStmt(
-		"INSERT INTO leaderboard (contestant_number, num_votes) SELECT contestant_number, count(*) FROM w_rows r JOIN contestants c ON c.contestant_number = r.contestant_number WHERE stage_flag = 0 GROUP BY contestant_number;"
+		"INSERT INTO leaderboard_tbl (contestant_number, num_votes) SELECT contestant_number, count(*) FROM w_rows r JOIN contestants_tbl c ON c.contestant_number = r.contestant_number WHERE stage_flag = 0 GROUP BY contestant_number;"
     );
     
     public final SQLStmt getLowestContestant = new SQLStmt(

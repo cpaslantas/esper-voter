@@ -36,14 +36,14 @@ import org.voltdb.VoltTable;
 import org.voltdb.types.TimestampType;
 
 @ProcInfo (
-    partitionInfo = "votes.phone_number:1",
+    partitionInfo = "votes_tbl.phone_number:1",
     singlePartition = true
 )
 public class VoteSP extends VoltProcedure {
 	
     // Checks if the vote is for a valid contestant
     public final SQLStmt checkContestantStmt = new SQLStmt(
-	   "SELECT contestant_number FROM contestants WHERE contestant_number = ?;"
+	   "SELECT contestant_number FROM contestants_tbl WHERE contestant_number = ?;"
     );
 	
     // Checks if the voter has exceeded their allowed number of votes
@@ -58,11 +58,11 @@ public class VoteSP extends VoltProcedure {
 	
     // Records a vote
     public final SQLStmt insertVoteStmt = new SQLStmt(
-		"INSERT INTO votes (vote_id, phone_number, state, contestant_number, created) VALUES (?, ?, ?, ?, ?);"
+		"INSERT INTO votes_tbl (vote_id, phone_number, state, contestant_number, created) VALUES (?, ?, ?, ?, ?);"
     );
     
     public final SQLStmt selectVoteStmt = new SQLStmt(
-    	"SELECT * FROM votes WHERE vote_id = ?;"	
+    	"SELECT * FROM votes_tbl WHERE vote_id = ?;"	
     );
     
     // Records a vote

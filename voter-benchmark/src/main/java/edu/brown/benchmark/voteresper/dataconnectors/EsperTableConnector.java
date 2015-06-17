@@ -221,5 +221,4 @@ public class EsperTableConnector extends EsperDataConnector {
 		out += "Remaining Contestants: " + getNumRemainingContestants();
 		return out;
 	}
-
 }
