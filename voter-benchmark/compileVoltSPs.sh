@@ -7,6 +7,7 @@ cd "${spdir}"
 javac -cp "$CLASSPATH:${curdir}/lib/*" VoteSP.java
 javac -cp "$CLASSPATH:${curdir}/lib/*" GenerateLeaderboardSP.java
 javac -cp "$CLASSPATH:${curdir}/lib/*" DeleteContestantSP.java
+javac -cp "$CLASSPATH:${curdir}/lib/*" InitializeSP.java
 
 jar cvf storedprocs.jar *.class
 

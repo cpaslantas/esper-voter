@@ -7,6 +7,8 @@ import com.espertech.esper.client.UpdateListener;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
+import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class VoteDeleteListener implements UpdateListener {
@@ -21,20 +23,26 @@ public class VoteDeleteListener implements UpdateListener {
     public void update(EventBean[] newData, EventBean[] oldData) {
     	//System.out.println("VoteDeleteListener - " + dc.getAllVotesEver());
     	
-    	int lowest = dc.findLowestContestant();
-    	long numContestants = dc.getNumRemainingContestants();
+    	ToDelete td = (ToDelete) newData[0].getUnderlying();
+    	int lowest = td.getContestantNumber();
     	
-    	if(numContestants <= 1) {
-    		System.out.println("Not enough contestants to remove");
-    		return;
+    	if(dc instanceof VoltDBConnector) {
+    		boolean success = ((VoltDBConnector) dc).runSP3(td);
     	}
-    	
-    	dc.removeVotes(lowest);
-    	dc.removeContestant(lowest);
-    	
-    	if(newData.length < 1)
-    		return;
-    	Vote v = (Vote)newData[0].getUnderlying();
-    	dc.stats.addStat(VoterConstants.DELETE_KEY, v);
+    	else {
+	    	long numContestants = dc.getNumRemainingContestants();
+	    	
+	    	if(numContestants <= 1) {
+	    		System.out.println("Not enough contestants to remove");
+	    		return;
+	    	}
+	    	
+	    	dc.removeVotes(lowest);
+	    	dc.removeContestant(lowest);
+	    	
+	    	if(newData.length < 1)
+	    		return;
+    	}
+    	dc.stats.addStat(VoterConstants.DELETE_KEY, td);
     }
 }

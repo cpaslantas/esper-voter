@@ -32,12 +32,16 @@ public class PhoneCallListener implements UpdateListener {
     		StatsHolder.start();
     	}
     	
+    	Vote v;
+    	PhoneCall pc;
+    	//IF WE'RE USING VOLT SPs
     	if(dc instanceof VoltDBConnector) {
-    		PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
-    		Vote v = ((VoltDBConnector) dc).runSP1(pc);
+    		pc = (PhoneCall) newData[0].getUnderlying();
+    		v = ((VoltDBConnector) dc).runSP1(pc);
     	}
+    	//OTHERWISE
     	else {
-	    	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
+	    	pc = (PhoneCall) newData[0].getUnderlying();
 	        boolean exists = dc.realContestant(pc.contestantNumber);
 	        long numVotes = dc.numTimesVoted(pc.phoneNumber);
 	        String state = dc.getState(pc.phoneNumber);
@@ -54,14 +58,14 @@ public class PhoneCallListener implements UpdateListener {
 	        	return;
 	        }
 	        
-	        Vote v = new Vote(pc, state, System.nanoTime());
+	        v = new Vote(pc, state, System.nanoTime());
 	        dc.insertVote(v);
-	        
-	        dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
-	        v.startTime = System.nanoTime();
-	              
-	        EPRuntime cepRT = epService.getEPRuntime();
-	        cepRT.sendEvent(v);
     	}
+    	
+    	dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
+        v.startTime = System.nanoTime();
+              
+        EPRuntime cepRT = epService.getEPRuntime();
+        cepRT.sendEvent(v);
     }
 }

@@ -11,6 +11,7 @@ import edu.brown.benchmark.voteresper.EPRuntimeUtil;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
+import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
 import java.sql.*;
@@ -151,13 +152,15 @@ public class VoltDBConnector extends EsperDataConnector{
     }
     
     private void populateDatabase(int numContestants) {
+    	/**
 		for(int i = 0; i < numContestants; i++) {
 			insertContestant(i+1, CONTESTANT_NAMES[i]);
 		}
 		assert areaCodes.length == states.length;
 		for(int i = 0; i < areaCodes.length; i++) {
 			executeQuery("insert into area_code_state values (" + areaCodes[i] + ",'" + states[i] + "')");
-		}
+		}*/
+    	runInitialize(numContestants);
 	}
     
     public boolean executeQuery(String query) {
@@ -416,6 +419,19 @@ public class VoltDBConnector extends EsperDataConnector{
 		return out;
 	}
 	
+	public void runInitialize(int numContestants) {
+		try {
+			CallableStatement stmt = dbconn.prepareCall("{call InitializeSP(?,?)}");
+			stmt.setLong(1, numContestants);
+			stmt.setString(2, VoterConstants.CONTESTANT_NAMES_CSV);
+			ResultSet result = stmt.executeQuery();
+			
+		}
+		catch(SQLException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+	
 	public Vote runSP1(PhoneCall pc) {
 		try {
 			CallableStatement stmt = dbconn.prepareCall("{call VoteSP(?,?,?,?)}");
@@ -429,13 +445,55 @@ public class VoltDBConnector extends EsperDataConnector{
 				return null;
 			else {
 				
-				//Vote v = new Vote(result.getLong("vote_id"), result.getInt("contestant_number"), result.getLong("phone_number"), result.getString("state"), System.nanoTime(), pc.getInTime() );
-				return null;
+				return new Vote(result.getLong("vote_id"), result.getInt("contestant_number"), result.getLong("phone_number"), result.getString("state"), System.nanoTime(), pc.getInTime() );
+				//return null;
 			}
 		}
 		catch(SQLException e) {
 			System.err.println(e.getMessage());
 			return null;
+		}
+	}
+	
+	public ToDelete runSP2(Vote v) {
+		try {
+			CallableStatement stmt = dbconn.prepareCall("{call GenerateLeaderboardSP(?,?,?,?,?)}");
+			stmt.setLong(1, v.voteId);
+			stmt.setLong(2, v.phoneNumber);
+			stmt.setString(3, v.state);
+			stmt.setLong(4, v.contestantNumber);
+			stmt.setLong(5, v.startTime);
+			ResultSet result = stmt.executeQuery();
+			
+			if(result == null || result.first() == false)
+				return null;
+			else {
+				
+				return new ToDelete(result.getInt("contestant_number"), System.nanoTime(), v.getTupleStartTime() );
+				//return null;
+			}
+		}
+		catch(SQLException e) {
+			System.err.println(e.getMessage());
+			return null;
+		}
+	}
+	
+	public boolean runSP3(ToDelete td) {
+		try {
+			CallableStatement stmt = dbconn.prepareCall("{call DeleteContestantSP(?)}");
+			stmt.setLong(1, td.contestantNumber);
+			ResultSet result = stmt.executeQuery();
+			
+			if(result == null || result.first() == false)
+				return false;
+			else {
+				return true;
+			}
+		}
+		catch(SQLException e) {
+			System.err.println(e.getMessage());
+			return false;
 		}
 	}
 }

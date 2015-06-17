@@ -40,6 +40,7 @@ public class VoterCEPProvider implements ICEPProvider {
         }
         cepConfig.addEventType("PhoneCall", PhoneCall.class.getName());
         cepConfig.addEventType("Vote", Vote.class.getName());
+        cepConfig.addEventType("ToDelete", ToDelete.class.getName());
 
 
         // EsperJMX enablement - if available
@@ -82,7 +83,10 @@ public class VoterCEPProvider implements ICEPProvider {
         
         EPStatement phoneCallStatement = cepAdm.createEPL("select * from " +
                 "PhoneCall(contestantNumber>0)");
-//        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+        EPStatement voteWindowStmt = cepAdm.createEPL("select * from " +
+                "Vote");
+        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
+                "ToDelete");
 //                "Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
 //        EPStatement voteDeleteStmt = cepAdm.createEPL("select * from " +
 //                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
@@ -90,8 +94,8 @@ public class VoterCEPProvider implements ICEPProvider {
 //                "Vote");
 //        
        phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-//        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-//        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+        voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+        voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
 //        voteStmt.addListener(new WorkflowEndListener(epService, dc));
         
         

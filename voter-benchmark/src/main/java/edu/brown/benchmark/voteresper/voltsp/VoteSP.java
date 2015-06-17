@@ -99,8 +99,10 @@ public VoltTable[] run(long voteId, long phoneNumber, int contestantNumber, long
         final String state = (validation[2].getRowCount() > 0) ? validation[2].fetchRow(0).getString(0) : "XX";
 		 		
         // Post the vote
-        TimestampType timestamp = new TimestampType();
+        //TimestampType timestamp = new TimestampType();
+        long timestamp = System.nanoTime();
         voltQueueSQL(insertVoteStmt, voteId, phoneNumber, state, contestantNumber, timestamp);
+        voltExecuteSQL();
         //voltQueueSQL(insertProcEndStmt, voteId, phoneNumber, state, contestantNumber, timestamp);
         voltQueueSQL(selectVoteStmt, voteId);
         validation = voltExecuteSQL(true);

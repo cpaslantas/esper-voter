@@ -43,7 +43,7 @@ public abstract class VoterConstants {
     													"Leonard Cohen,Celine Dion,Nelly Furtado,Adam Gontier,Emily Haines," +
     													"Avril Lavigne,Ashley Leggat,Eileen McGann,Sarah McLachlan,Joni Mitchell," +
     													"Mae Moore,Alanis Morissette,Emilie Mover,Anne Murray,Sam Roberts," +
-    													"Serena Ryder,Tamara Sandor,Nicholas Scribner,Shania Twain,Neil Young" + 
+    													"Serena Ryder,Tamara Sandor,Nicholas Scribner,Shania Twain,Neil Young," + 
     													"Aann Jrden,Bicah Marnes,Bustin Jieber,Bim Jryson,Bichael Muble," +
     													"Ceonard Lohen,Deline Cion,Felly Nurtado,Gdam Aontier,Hmily Eaines," +
     													"Lvril Aavigne,Lshley Aeggat,Mileen EcGann,Marah ScLachlan,Moni Jitchell," +

@@ -100,15 +100,15 @@ public class GenerateLeaderboardSP extends VoltProcedure {
     );
     
     // Pull aggregate from window
-    public final SQLStmt updateLeaderBoardStmt = new SQLStmt(
-		"INSERT INTO leaderboard_tbl (contestant_number, num_votes) SELECT contestant_number, count(*) FROM w_rows r JOIN contestants_tbl c ON c.contestant_number = r.contestant_number WHERE stage_flag = 0 GROUP BY contestant_number;"
-    );
+//    public final SQLStmt updateLeaderBoardStmt = new SQLStmt(
+//		"INSERT INTO leaderboard_tbl (contestant_number, num_votes) SELECT contestant_number, count(*) FROM w_rows r JOIN contestants_tbl c ON c.contestant_number = r.contestant_number WHERE stage_flag = 0 GROUP BY contestant_number;"
+//    );
     
     public final SQLStmt getLowestContestant = new SQLStmt(
     	"SELECT contestant_number FROM v_votes_by_contestant ORDER BY num_votes ASC LIMIT 1;"
     );
 	
-    public VoltTable[] run(long voteId, long phoneNumber, String state, long contestantNumber, TimestampType timestamp) {
+    public VoltTable[] run(long voteId, long phoneNumber, String state, int contestantNumber, long timestamp) {
 		
         voltQueueSQL(checkStagingCount);
         voltQueueSQL(checkCurrentVoteStmt);
@@ -141,7 +141,7 @@ public class GenerateLeaderboardSP extends VoltProcedure {
 	            voltQueueSQL(deleteCutoffVoteStmt, cutoffId);
 	        	voltQueueSQL(updateWindowStmt);
 	    		voltQueueSQL(deleteLeaderBoardStmt);
-	    		voltQueueSQL(updateLeaderBoardStmt);
+	    		//voltQueueSQL(updateLeaderBoardStmt);
 	    		voltQueueSQL(clearStagingCountStmt);
 	    		//voltExecuteSQL(true);
 	        }
