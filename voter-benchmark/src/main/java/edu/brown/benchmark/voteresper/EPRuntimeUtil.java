@@ -145,6 +145,7 @@ public class EPRuntimeUtil
 	                }
 	            }
 	        }
+	        VoterConstants.NUM_LINES = count;
 	        return (count == 0 && !empty) ? 1 : count;
 	    } finally {
 	        is.close();

@@ -17,3 +17,97 @@ Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.22337203685
 Workflow: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
 Dummy: 91448 TUPLES, AVG THPUT: 3035 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 0.0 sec, MAX LAT: 0.01 sec
 ------------------------------------------------
+FINAL DURATION: 60.043 SECONDS:
+Vote: 18675 TUPLES, AVG THPUT: 311 tup/sec, AVG LAT: 32.441 sec, MIN LAT: 1.162 sec, MAX LAT: 61.035 sec
+Leaderboard: 1849 TUPLES, AVG THPUT: 31 tup/sec, AVG LAT: 0.029 sec, MIN LAT: 0.016 sec, MAX LAT: 0.263 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 18675 TUPLES, AVG THPUT: 311 tup/sec, AVG LAT: 32.442 sec, MIN LAT: 1.162 sec, MAX LAT: 61.035 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+FINAL DURATION: 60.023 SECONDS:
+Vote: 19825 TUPLES, AVG THPUT: 330 tup/sec, AVG LAT: 30.042 sec, MIN LAT: 1.034 sec, MAX LAT: 60.898 sec
+Leaderboard: 1964 TUPLES, AVG THPUT: 33 tup/sec, AVG LAT: 0.028 sec, MIN LAT: 0.015 sec, MAX LAT: 0.957 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 19825 TUPLES, AVG THPUT: 330 tup/sec, AVG LAT: 30.043 sec, MIN LAT: 1.034 sec, MAX LAT: 60.898 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 5
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 8000
+  Num Lines: -1
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  No Order: false
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: voltdbadhoc
+------------------------------
+FINAL DURATION: 60.045 SECONDS:
+Vote: 20350 TUPLES, AVG THPUT: 339 tup/sec, AVG LAT: 29.798 sec, MIN LAT: 1.159 sec, MAX LAT: 60.99 sec
+Leaderboard: 2016 TUPLES, AVG THPUT: 34 tup/sec, AVG LAT: 0.027 sec, MIN LAT: 0.015 sec, MAX LAT: 0.751 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 20350 TUPLES, AVG THPUT: 339 tup/sec, AVG LAT: 29.799 sec, MIN LAT: 1.159 sec, MAX LAT: 60.99 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 1
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 500
+  Num Lines: 938775
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  Order: true
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: voltdbadhoc
+------------------------------
+FINAL DURATION: 218486.873 SECONDS:
+Vote: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Leaderboard: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 1
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 500
+  Num Lines: 938775
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  Order: true
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: voltdbadhoc
+------------------------------
+FINAL DURATION: 218585.339 SECONDS:
+Vote: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Leaderboard: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 1
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 500
+  Num Lines: 938775
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  Order: true
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: voltdbadhoc
+------------------------------
+FINAL DURATION: 60.045 SECONDS:
+Vote: 20100 TUPLES, AVG THPUT: 335 tup/sec, AVG LAT: 29.98 sec, MIN LAT: 1.15 sec, MAX LAT: 61.024 sec
+Leaderboard: 1991 TUPLES, AVG THPUT: 33 tup/sec, AVG LAT: 0.027 sec, MIN LAT: 0.014 sec, MAX LAT: 0.731 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 20100 TUPLES, AVG THPUT: 335 tup/sec, AVG LAT: 29.981 sec, MIN LAT: 1.15 sec, MAX LAT: 61.024 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------

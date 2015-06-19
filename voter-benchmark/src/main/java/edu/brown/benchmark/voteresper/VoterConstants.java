@@ -32,9 +32,11 @@ public abstract class VoterConstants {
 	public static int WIN_SLIDE = 10;
 	public static int WIN_SIZE = 100;
 	public static boolean NO_ORDER = false;
+	public static String ORDER = "false";
 	public static String OUT_FILE = "/home/john/git/esper-voter/data/out/out.txt";
-	public static boolean PRINT_TO_CONSOLE = true;
+	public static boolean PRINT_TO_CONSOLE = false;
 	public static boolean MEASURE_INPUT_ONLY = false;
+	public static String BACKEND = "default";
 
 	public static final String LOCAL_HOST = "localhost";
 
@@ -73,10 +75,9 @@ public abstract class VoterConstants {
     	s += "  Duration: " + DURATION + "\n";
     	s += "  Num Contestants: " + NUM_CONTESTANTS + "\n";
     	s += "  Delete Threshold: " + VOTE_THRESHOLD + "\n";
-    	s += "  No Order: " + NO_ORDER + "\n";
+    	s += "  Order: " + ORDER + "\n";
     	s += "  Out File: " + OUT_FILE + "\n";
-    	s += "  Console: " + PRINT_TO_CONSOLE + "\n";
-    	s += "  Input Test: " + MEASURE_INPUT_ONLY + "\n";
+    	s += "  Backend: " + BACKEND + "\n";
     	s += "------------------------------";
     	return s;
     }

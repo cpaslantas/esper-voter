@@ -210,7 +210,7 @@ public class Server extends Thread {
         );
         SimulateClientConnection[] sims = new SimulateClientConnection[simulationThread];
         for (int i = 0; i < sims.length; i++) {
-            sims[i] = new SimulateClientConnection(simulationRate, executor, cepProvider, statSec);
+            sims[i] = new SimulateClientConnection(simulationRate, executor, cepProvider, statSec, VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE, VoterConstants.DURATION);
             sims[i].start();
         }
 
@@ -246,6 +246,7 @@ public class Server extends Thread {
             } else if ("-thread".equals(argv[i])) {
                 i++;
                 threadCore = Integer.parseInt(argv[i]);
+                VoterConstants.NUM_THREADS = threadCore;
             } else if ("-queue".equals(argv[i])) {
                 i++;
                 queueMax = Integer.parseInt(argv[i]);
@@ -267,16 +268,22 @@ public class Server extends Thread {
                 int xIndex = argv[i].indexOf('x');
                 simulationThread = Integer.parseInt(argv[i].substring(0, xIndex));
                 simulationRate = Integer.parseInt(argv[i].substring(xIndex + 1));
+                VoterConstants.INPUT_RATE = simulationRate;
             } else if ("-order".equals(argv[i])) {
             	i++;
-            	if("false".equals(argv[i]))
+            	if("false".equals(argv[i])) {
             		order = false;
-            	else
+            		VoterConstants.ORDER = "false";
+            	}
+            	else {
             		order = true;
+            		VoterConstants.ORDER = "true";
+            	}
             
     		} else if ("-backend".equals(argv[i])) {
             	i++;
-            	backend = argv[i];            
+            	backend = argv[i];  
+            	VoterConstants.BACKEND = backend;
     		} else if ("-threshold".equals(argv[i])) {
                 i++;
                 VoterConstants.VOTE_THRESHOLD = Integer.parseInt(argv[i]);
