@@ -8,7 +8,7 @@ import com.espertech.esper.client.UpdateListener;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
-import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBSPConnector;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
@@ -31,7 +31,7 @@ public class VoteWindowListener implements UpdateListener {
     	long startTime = System.nanoTime();
     	
     	Vote v = (Vote) newData[0].getUnderlying();
-    	ToDelete td;
+    	ToDelete td = null;
     	
 //    	if(newData.length < VoterConstants.WIN_SLIDE){
 //    		System.out.println("ERROR: FEWER THAN " + VoterConstants.WIN_SLIDE + " ROWS IN WINDOW SLIDE");
@@ -39,8 +39,8 @@ public class VoteWindowListener implements UpdateListener {
 //    		return;
 //    	}
     	
-    	if(dc instanceof VoltDBConnector) {
-    		td = ((VoltDBConnector) dc).runSP2(v);
+    	if(dc instanceof VoltDBSPConnector) {
+    		td = ((VoltDBSPConnector) dc).runSP2(v);
     	}
     	else {
 	    	int winSize = (int)dc.getLeaderboardSize();
@@ -51,17 +51,20 @@ public class VoteWindowListener implements UpdateListener {
 	    	}
 	    	
 	    	for(int i = 0; i < VoterConstants.WIN_SLIDE; i++) {    
-	    		v = (Vote)newData[i].getUnderlying();
-	    		if(cutoffVote < v.voteId)
-	    			cutoffVote = v.voteId;
 	    		dc.insertLeaderboard(v);
 	    	}
-	    	dc.setCutoffVote(cutoffVote);
-	    	td = new ToDelete(dc.findLowestContestant(), System.nanoTime(), v.tupleStartTime);
+	    	dc.setCutoffVote(cutoffVote + VoterConstants.WIN_SLIDE);
+	    	if(dc.getAllVotesEver() % VoterConstants.VOTE_THRESHOLD == 0)
+	    		td = new ToDelete(dc.findLowestContestant(), System.nanoTime(), v.tupleStartTime);
     	}
     	
     	dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
-    	EPRuntime cepRT = epService.getEPRuntime();
-        cepRT.sendEvent(td);
+    	if(td != null){
+    		EPRuntime cepRT = epService.getEPRuntime();
+    		cepRT.sendEvent(td);
+    	}
+    	else {
+    		dc.closeWorkflow(v);
+    	}
     }
 }

@@ -7,7 +7,7 @@ import com.espertech.esper.client.UpdateListener;
 import edu.brown.benchmark.voteresper.StatsCollector;
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
-import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBSPConnector;
 import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
@@ -26,8 +26,8 @@ public class VoteDeleteListener implements UpdateListener {
     	ToDelete td = (ToDelete) newData[0].getUnderlying();
     	int lowest = td.getContestantNumber();
     	
-    	if(dc instanceof VoltDBConnector) {
-    		boolean success = ((VoltDBConnector) dc).runSP3(td);
+    	if(dc instanceof VoltDBSPConnector) {
+    		boolean success = ((VoltDBSPConnector) dc).runSP3(td);
     	}
     	else {
 	    	long numContestants = dc.getNumRemainingContestants();
@@ -44,5 +44,6 @@ public class VoteDeleteListener implements UpdateListener {
 	    		return;
     	}
     	dc.stats.addStat(VoterConstants.DELETE_KEY, td);
+    	dc.closeWorkflow(td);
     }
 }

@@ -68,7 +68,7 @@ public class Server extends Thread {
     public static final int DEFAULT_STAT = 5;
     public static final String DEFAULT_MODE = "NOOP";
     public static final boolean DEFAULT_ORDER = true;
-    public static final String DEFAULT_BACKEND = "voltdb";
+    public static final String DEFAULT_BACKEND = "voltdbadhoc";
     public static final Properties MODES = new Properties();
 
     private ThreadPoolExecutor executor;//can be null

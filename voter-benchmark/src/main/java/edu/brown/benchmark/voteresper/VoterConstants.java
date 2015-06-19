@@ -59,6 +59,7 @@ public abstract class VoterConstants {
     public static final String DUMMY_BACKEND = "dummy";
     public static final String ESPER_BACKEND = "esper";
     public static final String VOLTDB_BACKEND = "voltdb";
+    public static final String VOLTDBADHOC_BACKEND = "voltdbadhoc";
     
     public static final String VOTER_TYPE = "Voter";
     

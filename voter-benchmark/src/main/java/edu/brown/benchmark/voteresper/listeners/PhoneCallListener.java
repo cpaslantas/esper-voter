@@ -6,7 +6,7 @@ import com.espertech.esper.client.*;
 
 import edu.brown.benchmark.voteresper.VoterConstants;
 import edu.brown.benchmark.voteresper.dataconnectors.EsperDataConnector;
-import edu.brown.benchmark.voteresper.dataconnectors.VoltDBConnector;
+import edu.brown.benchmark.voteresper.dataconnectors.VoltDBSPConnector;
 import edu.brown.benchmark.voteresper.server.StatsHolder;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 import edu.brown.benchmark.voteresper.tuples.Vote;
@@ -32,16 +32,14 @@ public class PhoneCallListener implements UpdateListener {
     		StatsHolder.start();
     	}
     	
-    	Vote v;
-    	PhoneCall pc;
+    	Vote v = null;
+    	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
     	//IF WE'RE USING VOLT SPs
-    	if(dc instanceof VoltDBConnector) {
-    		pc = (PhoneCall) newData[0].getUnderlying();
-    		v = ((VoltDBConnector) dc).runSP1(pc);
+    	if(dc instanceof VoltDBSPConnector) {
+    		v = ((VoltDBSPConnector) dc).runSP1(pc);
     	}
     	//OTHERWISE
     	else {
-	    	pc = (PhoneCall) newData[0].getUnderlying();
 	        boolean exists = dc.realContestant(pc.contestantNumber);
 	        long numVotes = dc.numTimesVoted(pc.phoneNumber);
 	        String state = dc.getState(pc.phoneNumber);
@@ -63,9 +61,13 @@ public class PhoneCallListener implements UpdateListener {
     	}
     	
     	dc.stats.addStat(VoterConstants.VOTE_KEY, pc);
-        v.startTime = System.nanoTime();
-              
-        EPRuntime cepRT = epService.getEPRuntime();
-        cepRT.sendEvent(v);
+    	if(v != null) {
+	        v.startTime = System.nanoTime();
+	              
+	        EPRuntime cepRT = epService.getEPRuntime();
+	        cepRT.sendEvent(v);
+    	} else {
+    		dc.closeWorkflow(pc);
+    	}
     }
 }

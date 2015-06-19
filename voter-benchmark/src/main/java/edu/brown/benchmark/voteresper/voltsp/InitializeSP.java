@@ -30,7 +30,7 @@ import org.voltdb.SQLStmt;
 import org.voltdb.VoltProcedure;
 
 @ProcInfo (
-singlePartition = false
+//singlePartition = false
 )
 public class InitializeSP extends VoltProcedure
 {

@@ -51,6 +51,11 @@ public class EsperTableConnector extends EsperDataConnector {
 				 "phone_number long, " + 
 				 " state string, " +
 				 "created	     long )");
+		cepAdm.createEPL("create index IX_VOTE on votes_tbl(phone_number)");
+		cepAdm.createEPL("CREATE INDEX IX_VOTE_CONT on votes_tbl(contestant_number)");
+		cepAdm.createEPL("CREATE INDEX IX_CONTESTANTS on contestants(contestant_number)");
+		cepAdm.createEPL("CREATE INDEX IX_AREA_CODE_STATE on area_code_state(area_code)");
+		cepAdm.createEPL("CREATE INDEX IX_LEADERBOARD on leaderboard_tbl(contestant_number)");
 	}
 	
 	private void populateDatabase(int numContestants) {

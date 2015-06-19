@@ -57,6 +57,15 @@
         </java>
     </target>
 
+    <target name="runVoltDB">
+        <property name="rootdir" value="/home/john"/>
+        <property name="buildDBFile" value="reloadDB.sh"/>
+        <exec executable="${rootdir}/git/esper-voter/voter-benchmark/${buildDBFile}">
+            <arg value="${rootdir}"/>
+        </exec>
+        <antcall target="runServer"/>
+    </target>
+
     <target name="runServer" depends="build">
         <property name="mode" value="Voter"/>
         <property name="thread" value="1"/>
@@ -71,14 +80,10 @@
         <property name="outfile" value="/home/john/git/esper-voter/data/out/out.txt"/>
         <property name="duration" value="60000"/>
         <property name="queue" value="-1"/>
-        <property name="buildDBFile" value="reloadDB.sh"/>
-        <property name="rootdir" value="/home/john"/>
-        <exec executable="${rootdir}/git/esper-voter/voter-benchmark/${buildDBFile}">
-            <arg value="${rootdir}"/>
-        </exec>
+        
+        
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
-
             <arg line="-mode ${mode}"/>
             <arg line="-sleep ${sleep}"/>
             <arg line="-thread ${thread}"/>

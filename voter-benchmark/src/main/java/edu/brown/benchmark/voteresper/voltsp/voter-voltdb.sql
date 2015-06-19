@@ -12,6 +12,7 @@ DROP TABLE area_code_state IF EXISTS;
 DROP TABLE votes_tbl IF EXISTS;
 DROP TABLE proc_one_out IF EXISTS;
 DROP TABLE w_rows IF EXISTS;
+DROP TABLE w_staging IF EXISTS;
 DROP TABLE leaderboard_tbl IF EXISTS;
 DROP TABLE votes_count IF EXISTS;
 DROP TABLE staging_count IF EXISTS;
@@ -28,7 +29,7 @@ CREATE TABLE contestants_tbl
   )
 );
 
---PARTITION TABLE contestants_tbl ON COLUMN contestant_number;
+PARTITION TABLE contestants_tbl ON COLUMN contestant_number;
 
 -- Map of Area Codes and States for geolocation classification of incoming calls
 CREATE TABLE area_code_state
@@ -49,7 +50,7 @@ CREATE TABLE votes_tbl
   vote_id            bigint     NOT NULL,
   phone_number       bigint     NOT NULL
 , state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
-, contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)
+, contestant_number  integer    NOT NULL --REFERENCES contestants_tbl (contestant_number)
 , created	     bigint  NOT NULL
 --, CONSTRAINT PK_votes ASSUMEUNIQUE ( vote_id )
  --PARTITION BY ( phone_number )
@@ -57,22 +58,36 @@ CREATE TABLE votes_tbl
 CREATE ASSUMEUNIQUE INDEX IX_votes ON votes_tbl(vote_id);
 PARTITION TABLE votes_tbl ON COLUMN phone_number;
 
+CREATE TABLE w_staging
+(
+  vote_id            bigint     NOT NULL,
+  phone_number       bigint     NOT NULL
+, state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
+, contestant_number  integer    NOT NULL --REFERENCES contestants_tbl (contestant_number)
+, created            timestamp  NOT NULL
+, win_id             bigint     NOT NULL
+-- PARTITION BY ( phone_number )
+);
+
+CREATE ASSUMEUNIQUE INDEX IX_w_staging ON w_staging(win_id);
+PARTITION TABLE w_staging ON COLUMN contestant_number;
+
 CREATE TABLE w_rows
 (
   vote_id            bigint     NOT NULL,
   phone_number       bigint     NOT NULL
 , state              varchar(2) NOT NULL -- REFERENCES area_code_state (state)
-, contestant_number  integer    NOT NULL REFERENCES contestants_tbl (contestant_number)
+, contestant_number  integer    NOT NULL --REFERENCES contestants_tbl (contestant_number)
 , created            bigint  NOT NULL
 , win_id             bigint     NOT NULL
-, stage_flag	     int        NOT NULL
+--, stage_flag	     int        NOT NULL
 --, CONSTRAINT PK_win PRIMARY KEY (win_id)
 -- PARTITION BY ( phone_number )
 );
 CREATE ASSUMEUNIQUE INDEX IX_w_rows ON w_rows(win_id);
 PARTITION TABLE w_rows ON COLUMN contestant_number;
 
-CREATE INDEX IX_stageflag ON w_rows(stage_flag);
+--CREATE INDEX IX_stageflag ON w_rows(stage_flag);
 
 CREATE TABLE leaderboard_tbl
 (
@@ -152,19 +167,6 @@ AS
  GROUP BY contestant_number
 ;
 
-CREATE VIEW v_leaderboard
-(
-  contestant_number
-, num_votes
-)
-AS
-   SELECT contestant_number
-        , COUNT(*)
-     FROM w_rows r -- not fully accurate
-    WHERE stage_flag = 0
- GROUP BY contestant_number
-;
-
 --CREATE VIEW v_top_three_last_30_sec
 --(
 --  contestant_number, num_votes
@@ -176,7 +178,7 @@ AS
 --   GROUP BY t.contestant_number
 --;
 
-CREATE PROCEDURE from class VoteSP;
-CREATE PROCEDURE from class GenerateLeaderboardSP;
-CREATE PROCEDURE from class DeleteContestantSP;
-CREATE PROCEDURE from class InitializeSP;
+ CREATE PROCEDURE from class VoteSP;
+ CREATE PROCEDURE from class GenerateLeaderboardSP;
+ CREATE PROCEDURE from class DeleteContestantSP;
+ CREATE PROCEDURE from class InitializeSP;
