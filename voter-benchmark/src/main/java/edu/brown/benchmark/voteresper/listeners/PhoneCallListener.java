@@ -57,7 +57,7 @@ public class PhoneCallListener implements UpdateListener {
 	        }
 	        
 	        v = new Vote(pc, state, System.nanoTime());
-	        dc.insertVote(v);
+	        //dc.insertVote(v);//TODO UNCOMMENT
     	}
     	
     	dc.stats.addStat(VoterConstants.VOTE_KEY, pc);

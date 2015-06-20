@@ -91,6 +91,7 @@ public class VoterCEPProvider implements ICEPProvider {
         EPStatement voteDeleteStmt;
         EPStatement voteStmt;
         if(backend.equalsIgnoreCase(VoterConstants.VOLTDB_BACKEND)) {
+        	//TODO ALL NEED TO BE UNCOMMENTED
 //        	voteWindowStmt = cepAdm.createEPL("select * from " +
 //        			"Vote");
 //        	voteDeleteStmt = cepAdm.createEPL("select * from " +
@@ -99,20 +100,18 @@ public class VoterCEPProvider implements ICEPProvider {
 //            voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
 //            voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
         } else {
-        	voteWindowStmt = cepAdm.createEPL("select * from " +
-        			"Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
-        	voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
-          voteStmt = cepAdm.createEPL("select * from " +
-        		 "Vote");
+//        	voteWindowStmt = cepAdm.createEPL("select * from " +
+//        			"Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
+//        	voteDeleteStmt = cepAdm.createEPL("select * from " +
+//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+//          voteStmt = cepAdm.createEPL("select * from " +
+//        		 "Vote");
           phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-          voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-          voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
-          voteStmt.addListener(new WorkflowEndListener(epService, dc));
+//          voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+//          voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+//          voteStmt.addListener(new WorkflowEndListener(epService, dc));
         }
-//        EPStatement voteStmt = cepAdm.createEPL("select * from " +
-//                "Vote");
-//        
+    
         
         //subscriber = new MySubscriber();
         epRuntime = epService.getEPRuntime();
