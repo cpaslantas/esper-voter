@@ -91,13 +91,13 @@ public class VoterCEPProvider implements ICEPProvider {
         EPStatement voteDeleteStmt;
         EPStatement voteStmt;
         if(backend.equalsIgnoreCase(VoterConstants.VOLTDB_BACKEND)) {
-        	voteWindowStmt = cepAdm.createEPL("select * from " +
-        			"Vote");
-        	voteDeleteStmt = cepAdm.createEPL("select * from " +
-        			"ToDelete");
+//        	voteWindowStmt = cepAdm.createEPL("select * from " +
+//        			"Vote");
+//        	voteDeleteStmt = cepAdm.createEPL("select * from " +
+//        			"ToDelete");
         	phoneCallStatement.addListener(new PhoneCallListener(epService, dc));
-            voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
-            voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
+//            voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
+//            voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
         } else {
         	voteWindowStmt = cepAdm.createEPL("select * from " +
         			"Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
