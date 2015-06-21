@@ -27,6 +27,7 @@ public abstract class VoterConstants {
 	public static int NUM_THREADS = 5;
 	public static int NUM_LINES = -1;
 	public static int DURATION = 30000;
+	public static int WARMUP_DURATION = 10000;
 	//public static int QUEUE_SIZE = 10000;
 	public static long SLEEP_TIME = 2;
 	public static int WIN_SLIDE = 10;
