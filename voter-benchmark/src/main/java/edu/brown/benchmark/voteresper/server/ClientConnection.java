@@ -114,7 +114,7 @@ public class ClientConnection extends Thread {
                     }
                     packet.clear();
                 }
-            } while (StatsHolder.curTime() < VoterConstants.DURATION);
+            } while (StatsHolder.curTime() < VoterConstants.DURATION + VoterConstants.WARMUP_DURATION);
         } catch (Throwable t) {
             t.printStackTrace();
             System.err.println("Error receiving data from client. Did client disconnect?");

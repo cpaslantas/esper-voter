@@ -210,7 +210,7 @@ public class Server extends Thread {
         );
         SimulateClientConnection[] sims = new SimulateClientConnection[simulationThread];
         for (int i = 0; i < sims.length; i++) {
-            sims[i] = new SimulateClientConnection(simulationRate, executor, cepProvider, statSec, VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE, VoterConstants.DURATION);
+            sims[i] = new SimulateClientConnection(simulationRate, executor, cepProvider, statSec, VoterConstants.VOTE_DIR + VoterConstants.VOTE_FILE, VoterConstants.DURATION + VoterConstants.WARMUP_DURATION);
             sims[i].start();
         }
 

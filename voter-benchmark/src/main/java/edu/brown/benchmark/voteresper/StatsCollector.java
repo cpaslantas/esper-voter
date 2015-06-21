@@ -9,6 +9,7 @@ import edu.brown.benchmark.voteresper.tuples.EsperTuple;
 
 public class StatsCollector {
 	private long startTime;
+	private long warmupStart;
 	private long totalDuration;
 	private HashMap<String, AtomicLong> totalLatency;
 	private HashMap<String, AtomicLong> totalCount;
@@ -18,6 +19,7 @@ public class StatsCollector {
 	private HashMap<String, Double> avgThroughput;
 	private ArrayList<String> keys;
 	boolean isStarted = false;
+	boolean warmup = false;
 	
 	public StatsCollector() {
 		initializeStats();
@@ -53,8 +55,16 @@ public class StatsCollector {
 	}
 	
 	public void start() {
-		isStarted = true;
+		if(!warmup) {
+			warmup = true;
+			warmupStart = System.currentTimeMillis();
+		}
+		if(System.currentTimeMillis() - warmupStart < VoterConstants.WARMUP_DURATION) {
+			return;
+		}
+
 		startTime = System.nanoTime();
+		isStarted = true;
 		totalDuration = 0l;
 	}
 	
@@ -64,7 +74,9 @@ public class StatsCollector {
 	}
 	
 	public void addStat(String stat, long startTime, long endTime) {
-		
+		if(!isStarted)
+			return;
+			
 		long duration = endTime - startTime;
 		totalLatency.get(stat).getAndAdd(duration);
 		totalCount.get(stat).getAndIncrement();
