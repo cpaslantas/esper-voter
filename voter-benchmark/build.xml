@@ -66,7 +66,6 @@
         <property name="queue" value="-1"/>
         <property name="rate" value="1x1000"/>
         
-        <antcall target="runVoltDB"/>
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
             <arg line="-mode ${mode}"/>
@@ -85,6 +84,11 @@
             <arg line="-rate ${rate}"/>
             <classpath location="etc"/><!--for etc/log4j.xml and statement discovery -->
         </java>
+    </target>
+
+    <target name="run-w-vdb">
+        <antcall target="runVoltDB"/>
+        <antcall target="run"/>
     </target>
 
     <target name="runVoltDB">
