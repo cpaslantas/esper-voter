@@ -111,3 +111,43 @@ Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.22337203685
 Workflow: 20100 TUPLES, AVG THPUT: 335 tup/sec, AVG LAT: 29.981 sec, MIN LAT: 1.15 sec, MAX LAT: 61.024 sec
 Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
 ------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 1
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 2000
+  Num Lines: 938775
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  Order: false
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: voltdb
+------------------------------
+FINAL DURATION: 60.074 SECONDS:
+Vote: 38400 TUPLES, AVG THPUT: 639 tup/sec, AVG LAT: 39.485 sec, MIN LAT: 5.677 sec, MAX LAT: 65.449 sec
+Leaderboard: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 267 TUPLES, AVG THPUT: 4 tup/sec, AVG LAT: 35.314 sec, MIN LAT: 5.923 sec, MAX LAT: 65.141 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
+-------------------------------------------
+RUNNING ESPER VOTER:
+  Threads: 1
+  Vote File: /home/john/git/esper-voter/data/votes-50-20000_1.txt
+  Input Rate: 2000
+  Num Lines: 938775
+  Duration: 60000
+  Num Contestants: 50
+  Delete Threshold: 20000
+  Order: false
+  Out File: /home/john/git/esper-voter/data/out/out.txt
+  Backend: esper
+------------------------------
+FINAL DURATION: 60.014 SECONDS:
+Vote: 71300 TUPLES, AVG THPUT: 1188 tup/sec, AVG LAT: 37.884 sec, MIN LAT: 5.271 sec, MAX LAT: 64.753 sec
+Leaderboard: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Delete: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+Workflow: 353 TUPLES, AVG THPUT: 6 tup/sec, AVG LAT: 29.721 sec, MIN LAT: 5.522 sec, MAX LAT: 64.245 sec
+Dummy: 0 TUPLES, AVG THPUT: 0 tup/sec, AVG LAT: 0.0 sec, MIN LAT: 9.223372036855E9 sec, MAX LAT: 0.0 sec
+------------------------------------------------
