@@ -3,6 +3,5 @@
    <cluster hostcount="1"
    			sitesperhost="1"
    />
-   <commandlog enabled="true"/>
 
 </deployment>
