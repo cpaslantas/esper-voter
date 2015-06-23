@@ -10,18 +10,18 @@ VOLTDB="/home/${DIR}/git/voltdb/bin/voltdb create --deployment=/home/${DIR}/git/
 while [ "${INPUT}" -lt "${FINAL}" ];
 do
 	ant run -Dthread=1 -Ddir="/home/${DIR}/git/esper-voter/" -Dfile="votes-50-20000_1.txt" \
-		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0621/esper-ramp-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
+		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0622/esper-ramp-log-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
 		-Dthreshold=20000 -Drootdir="/home/${DIR}" -Dbackend="esper" -e -Dlog="true"
 	eval ${VOLTDB} &
 	sleep 5
 	ant run-w-vdb -Dthread=1 -Ddir="/home/${DIR}/git/esper-voter/" -Dfile="votes-50-20000_1.txt" \
-		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0621/voltdbadhoc-ramp-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
+		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0622/voltdbadhoc-ramp-log-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
 		-Dthreshold=20000 -Drootdir="/home/${DIR}" -Dbackend="voltdbadhoc" -e  -Dlog="true"
 	pkill -f 'java'
 	eval ${VOLTDB} &
 	sleep 5
 	ant run-w-vdb -Dthread=1 -Ddir="/home/${DIR}/git/esper-voter/" -Dfile="votes-50-20000_1.txt" \
-		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0621/voltdbsp-ramp-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
+		-Doutfile="/home/${DIR}/git/esper-voter/data/out/0622/voltdbsp-ramp-log-1.txt" -Drate="1x${INPUT}" -Dcontestants=50 \
 		-Dthreshold=20000 -Drootdir="/home/${DIR}" -Dbackend="voltdb" -e  -Dlog="true"
 	pkill -f 'java'
 	let INPUT+=200
