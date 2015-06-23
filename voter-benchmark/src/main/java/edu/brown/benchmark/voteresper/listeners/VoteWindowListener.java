@@ -1,5 +1,7 @@
 package edu.brown.benchmark.voteresper.listeners;
 
+import org.apache.log4j.Logger;
+
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
@@ -14,6 +16,7 @@ import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class VoteWindowListener implements UpdateListener {
+	public static transient Logger LOG = Logger.getLogger(VoterConstants.COMMAND_LOG);
 	EsperDataConnector dc;
 	EPServiceProvider epService;
 	int numRuns = 0;
@@ -31,6 +34,8 @@ public class VoteWindowListener implements UpdateListener {
     	long startTime = System.nanoTime();
     	
     	Vote v = (Vote) newData[0].getUnderlying();
+    	LOG.debug("exec VoteWindowListener\t" + v.toParams());
+    	
     	ToDelete td = null;
     	
 //    	if(newData.length < VoterConstants.WIN_SLIDE){
@@ -50,7 +55,10 @@ public class VoteWindowListener implements UpdateListener {
 	    		dc.deleteCutoff(cutoffVote);
 	    	}
 	    	
-	    	for(int i = 0; i < VoterConstants.WIN_SLIDE; i++) {    
+	    	assert(newData.length >= VoterConstants.WIN_SLIDE);
+	    	
+	    	for(int i = 0; i < VoterConstants.WIN_SLIDE; i++) {
+	    		v = (Vote) newData[i].getUnderlying();
 	    		dc.insertLeaderboard(v);
 	    	}
 	    	dc.setCutoffVote(cutoffVote + VoterConstants.WIN_SLIDE);

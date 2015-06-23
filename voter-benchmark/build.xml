@@ -65,6 +65,7 @@
         <property name="duration" value="60000"/>
         <property name="queue" value="-1"/>
         <property name="rate" value="1x1000"/>
+        <property name="log" value="true"/>
         
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
@@ -82,6 +83,7 @@
             <arg line="-duration ${duration}"/>
             <arg line="-queue ${queue}"/>
             <arg line="-rate ${rate}"/>
+            <arg line="-log ${log}"/>
             <classpath location="etc"/><!--for etc/log4j.xml and statement discovery -->
         </java>
     </target>
@@ -118,7 +120,7 @@
         <property name="outfile" value="/home/john/git/esper-voter/data/out/out.txt"/>
         <property name="duration" value="60000"/>
         <property name="queue" value="-1"/>
-        
+        <property name="log" value="true"/>
         
         <java classpathref="lib.classpath" classname="edu.brown.benchmark.voteresper.server.Server" fork="true">
             <!--<arg line="-mode STP"/> -->
@@ -135,6 +137,7 @@
             <arg line="-outfile ${outfile}"/>
             <arg line="-duration ${duration}"/>
             <arg line="-queue ${queue}"/>
+            <arg line="-log ${log}"/>
             <classpath location="etc"/><!--for etc/log4j.xml and statement discovery -->
         </java>
     </target>

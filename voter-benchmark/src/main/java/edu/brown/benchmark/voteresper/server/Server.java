@@ -18,6 +18,10 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * The main Esper Server thread listens on the given port.
@@ -224,6 +228,10 @@ public class Server extends Thread {
     }
 
     public static void main(String argv[]) throws IOException {
+    	SimpleLayout layout = new SimpleLayout();
+        ConsoleAppender appender = new ConsoleAppender(new SimpleLayout());
+        Logger.getRootLogger().addAppender(appender);
+    	
         // load modes
         MODES.load(Server.class.getClassLoader().getResourceAsStream("statements.properties"));
         MODES.put("NOOP", "");
@@ -278,6 +286,17 @@ public class Server extends Thread {
             	else {
             		order = true;
             		VoterConstants.ORDER = "true";
+            	}
+            
+    		} else if ("-log".equals(argv[i])) {
+            	i++;
+            	if("false".equals(argv[i])) {
+            		Logger.getLogger(VoterConstants.COMMAND_LOG).setLevel((Level) Level.WARN);
+            		VoterConstants.LOG = "false";
+            	}
+            	else {
+            		Logger.getLogger(VoterConstants.COMMAND_LOG).setLevel((Level) Level.DEBUG);
+            		VoterConstants.LOG = "true";
             	}
             
     		} else if ("-backend".equals(argv[i])) {

@@ -1,5 +1,7 @@
 package edu.brown.benchmark.voteresper.listeners;
 
+import org.apache.log4j.Logger;
+
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
@@ -12,6 +14,7 @@ import edu.brown.benchmark.voteresper.tuples.ToDelete;
 import edu.brown.benchmark.voteresper.tuples.Vote;
 
 public class VoteDeleteListener implements UpdateListener {
+	public static transient Logger LOG = Logger.getLogger(VoterConstants.COMMAND_LOG);
 	EsperDataConnector dc;
 	EPServiceProvider epService;
 	
@@ -25,6 +28,8 @@ public class VoteDeleteListener implements UpdateListener {
     	
     	ToDelete td = (ToDelete) newData[0].getUnderlying();
     	int lowest = td.getContestantNumber();
+    	
+    	LOG.debug("exec DeleteContestantSP\t" + td.toParams());
     	
     	if(dc instanceof VoltDBSPConnector) {
     		boolean success = ((VoltDBSPConnector) dc).runSP3(td);

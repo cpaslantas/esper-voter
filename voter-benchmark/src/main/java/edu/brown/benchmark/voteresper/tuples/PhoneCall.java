@@ -5,6 +5,7 @@ import java.nio.CharBuffer;
 
 import edu.brown.benchmark.voteresper.MarketData;
 import edu.brown.benchmark.voteresper.Symbols;
+import edu.brown.benchmark.voteresper.VoterConstants;
 
 public class PhoneCall extends EsperTuple {
 	public final static int SIZE = Long.SIZE + Integer.SIZE + Long.SIZE + Long.SIZE;
@@ -68,5 +69,9 @@ public class PhoneCall extends EsperTuple {
     
     public String toString() {
     	return "VoteID: " + voteId + " ContestantNumber: " + contestantNumber + " PhoneNumber: " + phoneNumber;
+    }
+    
+    public String toParams() {
+    	return "" + voteId + "," + phoneNumber + "," + contestantNumber + "," + VoterConstants.NUM_CONTESTANTS;
     }
 }

@@ -21,5 +21,9 @@ public class ToDelete extends EsperTuple{
     public String toString() {
     	return "ContestantNumber: " + contestantNumber;
     }
+    
+    public String toParams() {
+    	return "" + contestantNumber;
+    }
 
 }

@@ -24,7 +24,7 @@ public abstract class VoterConstants {
 	public static String DDL_FILE = "voter-voltdb.sql";
 	public static String LOAD_DB_FILE = "reloadDB.sh"; 
 	public static String VOTE_FILE = "votes-50-20000_1.txt";
-	public static int NUM_THREADS = 5;
+	public static int NUM_THREADS = 1;
 	public static int NUM_LINES = -1;
 	public static int DURATION = 30000;
 	public static int WARMUP_DURATION = 10000;
@@ -38,6 +38,7 @@ public abstract class VoterConstants {
 	public static boolean PRINT_TO_CONSOLE = false;
 	public static boolean MEASURE_INPUT_ONLY = false;
 	public static String BACKEND = "default";
+	public static String LOG = "true";
 
 	public static final String LOCAL_HOST = "localhost";
 
@@ -66,6 +67,8 @@ public abstract class VoterConstants {
     
     public static final String VOTER_TYPE = "Voter";
     
+    public static final String COMMAND_LOG = "EsperVoterDurableLog";
+    
     public static String getConfiguration(){
     	String s = "-------------------------------------------\n";
     	s += "RUNNING ESPER VOTER:\n";
@@ -79,6 +82,7 @@ public abstract class VoterConstants {
     	s += "  Order: " + ORDER + "\n";
     	s += "  Out File: " + OUT_FILE + "\n";
     	s += "  Backend: " + BACKEND + "\n";
+    	s += "  Log: " + LOG + "\n";
     	s += "------------------------------";
     	return s;
     }

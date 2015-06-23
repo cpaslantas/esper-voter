@@ -10,9 +10,12 @@ import edu.brown.benchmark.voteresper.dataconnectors.VoltDBSPConnector;
 import edu.brown.benchmark.voteresper.server.StatsHolder;
 import edu.brown.benchmark.voteresper.tuples.PhoneCall;
 import edu.brown.benchmark.voteresper.tuples.Vote;
+import org.apache.log4j.Logger;
+
 
 public class PhoneCallListener implements UpdateListener {
 	
+	public static transient Logger LOG = Logger.getLogger(VoterConstants.COMMAND_LOG);
 	EsperDataConnector dc;
 	EPServiceProvider epService;
 	int numRuns = 0;
@@ -23,6 +26,7 @@ public class PhoneCallListener implements UpdateListener {
 	}
 		 
     public void update(EventBean[] newData, EventBean[] oldData) {
+    	
 //    	numRuns++;
 //    	if(numRuns % 1000 == 0)
 //        	System.out.println("PHONE CALL LISTENER: " + numRuns);
@@ -34,6 +38,8 @@ public class PhoneCallListener implements UpdateListener {
     	
     	Vote v = null;
     	PhoneCall pc = (PhoneCall) newData[0].getUnderlying();
+    	LOG.debug("exec VoteSP\t" + pc.toParams());
+    	
     	//IF WE'RE USING VOLT SPs
     	if(dc instanceof VoltDBSPConnector) {
     		v = ((VoltDBSPConnector) dc).runSP1(pc);

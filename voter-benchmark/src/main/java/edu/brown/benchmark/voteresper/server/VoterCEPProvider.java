@@ -102,7 +102,8 @@ public class VoterCEPProvider implements ICEPProvider {
         	voteWindowStmt = cepAdm.createEPL("select * from " +
         			"Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
         	voteDeleteStmt = cepAdm.createEPL("select * from " +
-                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
+        			"ToDelete");
+//                "Vote.win:length_batch(" + VoterConstants.VOTE_THRESHOLD + ")");
           voteStmt = cepAdm.createEPL("select * from " +
         		 "Vote");
           phoneCallStatement.addListener(new PhoneCallListener(epService, dc));

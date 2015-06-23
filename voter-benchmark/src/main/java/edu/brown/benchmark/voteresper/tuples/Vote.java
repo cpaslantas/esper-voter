@@ -1,5 +1,9 @@
 package edu.brown.benchmark.voteresper.tuples;
 
+import org.voltdb.types.TimestampType;
+
+import edu.brown.benchmark.voteresper.VoterConstants;
+
 
 public class Vote extends EsperTuple{
     public final long voteId;
@@ -47,5 +51,9 @@ public class Vote extends EsperTuple{
     
     public String outputValues() {
     	return new String(voteId + "," + contestantNumber + "," + phoneNumber + ",'" + state + "'," + timestamp);
+    }
+    
+    public String toParams() {
+    	return "" + voteId + "," + phoneNumber + "," + state + "," + contestantNumber + "," + timestamp;
     }
 }
