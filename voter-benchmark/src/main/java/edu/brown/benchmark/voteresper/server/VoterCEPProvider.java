@@ -99,6 +99,7 @@ public class VoterCEPProvider implements ICEPProvider {
             voteWindowStmt.addListener(new VoteWindowListener(epService, dc));
             voteDeleteStmt.addListener(new VoteDeleteListener(epService, dc));
         } else {
+        	System.out.println("Window state in Esper");
         	voteWindowStmt = cepAdm.createEPL("select * from " +
         			"Vote.win:length_batch(" + VoterConstants.WIN_SLIDE + ")");
         	voteDeleteStmt = cepAdm.createEPL("select * from " +

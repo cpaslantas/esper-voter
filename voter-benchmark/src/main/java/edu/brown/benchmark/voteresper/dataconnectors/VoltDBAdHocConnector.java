@@ -31,6 +31,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
     
     public VoltDBAdHocConnector(int numContestants, EPServiceProvider cep, StatsCollector stats) {
     	super(stats);
+    	System.out.println("VOLTDBADHOC CONSTRUCTOR");
     	this.numContestants = numContestants;
     	this.cep = cep;
     	this.cepRT = cep.getEPRuntime();
@@ -43,6 +44,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
         }
         //initializeDatabase();
         populateDatabase(numContestants);
+        System.out.println("VOLTDBADHOC CONSTRUCTED");
     }
     
     public Connection getConnection() {
@@ -298,8 +300,7 @@ public class VoltDBAdHocConnector extends EsperDataConnector{
 	@Override
 	public boolean insertVote(Vote v) {
 		boolean success = executeQuery("insert into votes_tbl (" + Vote.outputColumns() + " ) values (" + v.outputValues() + ")");
-		if(success)
-			allVotesEver++;
+		allVotesEver++;
 		
 		return success;
 	}

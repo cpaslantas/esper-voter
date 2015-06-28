@@ -62,8 +62,9 @@ public class VoteWindowListener implements UpdateListener {
 	    		dc.insertLeaderboard(v);
 	    	}
 	    	dc.setCutoffVote(cutoffVote + VoterConstants.WIN_SLIDE);
-	    	if(dc.getAllVotesEver() % VoterConstants.VOTE_THRESHOLD == 0)
+	    	if(dc.getAllVotesEver() % VoterConstants.VOTE_THRESHOLD == 0) {
 	    		td = new ToDelete(dc.findLowestContestant(), System.nanoTime(), v.tupleStartTime);
+	    	}
     	}
     	
     	dc.stats.addStat(VoterConstants.LEADERBOARD_KEY, v);
